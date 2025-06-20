@@ -25,15 +25,19 @@ CMD_SET_GYRO_P=26
 CMD_SET_GYRO_D=27
 CMD_SET_SPCTRL_P=28
 CMD_SET_SPCTRL_D=29
-CMD_SETHANDBRAKE_P=30
+CMD_SET_HANDBRAKE_P=30
+CMD_SET_ARCDIR=32
+CMD_SET_GYRO_LATENCY_MILLIS=33
+CMD_SET_SGYRO_LIMITS=34
+CMD_SET_SPCTRL_I=35
 
-CMD_DATA_POSL=11
-CMD_DATA_POSR=12
-CMD_DATA_POSAVG=13
-CMD_DATA_VMODE=14
-CMD_DATA_SPEED=15
-CMD_DATA_GYRO=16
-CMD_DATA_US=24
+# CMD_DATA_POSL=11
+# CMD_DATA_POSR=12
+# CMD_DATA_POSAVG=13
+# CMD_DATA_VMODE=14
+# CMD_DATA_SPEED=15
+# CMD_DATA_GYRO=16
+# CMD_DATA_US=24
 
 SYNC_CODE=18
 
@@ -53,6 +57,8 @@ SMODE_NONE=0
 '''sMode (steer), sets it so the robot does not steer'''
 SMODE_GYRO=1
 '''sMode (steer), sets it so the robots steering is kept straight by the gyro'''
+SMODE_ARC=2
+'''sMode (steer), the ESP turns until desired angle is reached'''
 
 
 isSynced=False
@@ -113,7 +119,7 @@ packetCount=0
 def processPacket(bytes:list):
     global isSynced, heading, encoderLeft, encoderRight, vMode, speed, sMode, logVar, packetCount
     packetCount+=1
-    # log.debug("esp packet %s"%packetCount)
+    
     isSynced=readInt(1,bytes)
     heading=readInt(4,bytes)
     encoderLeft=readInt(4,bytes)
@@ -122,6 +128,7 @@ def processPacket(bytes:list):
     sMode=readInt(1,bytes)
     speed=readInt(4,bytes)
     logVar=readInt(4,bytes)
+    # log.debug("esp packet speed %s enc1 %s"%(speed,encoderRight))
     # log.debug("received packet %s %s"%(logVar,time.time()))
     if isSynced!=2:
         log.warn(isSynced)
@@ -171,10 +178,18 @@ def setUnregulatedPower(power):
 def setGyroPD(p,d):
     sendCommand(CMD_SET_GYRO_P,int(p))
     sendCommand(CMD_SET_GYRO_D,int(d))
-def setSpeedcontrolPD(p,d):
+def setSpeedcontrolPID(p,i,d):
     sendCommand(CMD_SET_SPCTRL_P,int(p))
     sendCommand(CMD_SET_SPCTRL_D,int(d))
+    sendCommand(CMD_SET_SPCTRL_I,int(i))
 def setHandbrakeP(p):
-    sendCommand(CMD_SETHANDBRAKE_P,int(p))
+    sendCommand(CMD_SET_HANDBRAKE_P,int(p))
 def handBrake():
     setVMode(VMODE_HANDBRAKE)
+def setArcDir(arcDir):
+    '''-1:left, 1:right'''
+    sendCommand(CMD_SET_ARCDIR,arcDir)
+def setGyroLatencyMillis(millis):
+    sendCommand(CMD_SET_GYRO_LATENCY_MILLIS,millis)
+def setSGyroLimits(limit):
+    sendCommand(CMD_SET_SGYRO_LIMITS,int(limit))
