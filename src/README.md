@@ -7,23 +7,28 @@ This document also includes a software setup guide, detailing what libraries and
 
 ## Sensors and motors
 
+The different communication protocols and libraries used between the components of the robot and their hierarchy:
+
 The different communication protocols used between the components of the robot and their hierarchy:
 
 - Computer
-  - Raspberry Pi `SSH`
-    - ESP `UART`
-      - IMU `UART-RVC`
+  - Raspberry Pi `SSH` **custom VScode extension**
+    - ESP `UART` **custom serial protocol**
+      - IMU `UART-RVC` **Adafruit_BNO08x_RVC library**
       - Motor encoder `Digital`
       - Motor driver `PWM` 2x`Digital`
       - Servo `PWM`
       - LiDAR (control) `PWM`
-    - LiDAR (receive) `UART`
-    - Led&Key panel `Data, Strobe, Clock`
+    - LiDAR (receive) `UART` **custom protocol implementation**
+    - Led&Key panel `Data, Strobe, Clock` **TMBoard library**
     - Buzzer `Digital`
-    - Camera `FPC Camera Cable`
+    - Camera `FPC Camera Cable` **picamera library**
 
 Communication between the Raspberry Pi and the computer is handled by our custom-made Visual Studio Code extension, RpiCode. It creates the SSH connection over WiFi or Ethernet and enables us to upload or download files and even view live sensor data. More information about the extension can be found in the [RpiCode documentation](/other/RpiCode/README.md).
 
+We use a plethora of different sensors and motors to make the robot go. For some of the sensors we simply used pre-made libraries for communication. This is usually the best decision as most of these libraries are made by the manufacturers themselves, who have the deepest understanding of the inner workings of the sensor. In other cases we had to write some simple code where most of the logic is setting pins to `HIGH` or `LOW` or detecting when pins change state. However in multiple cases for one reason or another we had to create our own solution. One of these cases is with the LiDAR sensor, as there were no Python libraries/solutions on the internet. We studied the [official developer documentation](https://www.elecrow.com/download/product/SLD06360F/LD19_Development%20Manual_V2.3.pdf) of the sensor, specifically the byte order in the serial communication. An image of that can be seen here: ![image showing the byte order](image-1.png)
+Our solution was to read the incoming data byte-by-byte and store every byte in an array until a full packet is received. The start of a packet is marked by the Header byte and since the packet byte-size is fixed, we read that many bytes. After this the packet is processed all at once. The sensor operates at 5000Hz and sends 12 measurements per packet, so it sends roughly 417 packets per second. Most numbers are in a two byte format, so we had to shift `M`ost `S`ignificant `B`yte then add the `L`east `S`ignificant `B`yte to get the full number. This part of the code can be found in [src/RaspberryPi/LidarService.py](/src/RaspberryPi/LidarService.py).
+We also had to speed up the sensor to its maximum velocity, enabling us to receive measurements for every degree up to 15 times a second instead of 10, which was necessary to keep up with the high speed movement of the robot. This was done by sending a specific `PWM` signal from the ESP at a specific frequency. This proved challenging due to poor and lackluster documentation, our solution can be found in [src/ESP/run.ino](/src/ESP/run.ino) in the setup function.
 We use a plethora of different sensors and motors to make the robot go. For some of the sensors we simply used pre-made libraries for communication. This is usually the best decision as most of these libraries are made by the manufacturers themselves, who have the deepest understanding of the inner workings of the sensor. In other cases we had to write some simple code where most of the logic is setting pins to `HIGH` or `LOW` or detecting when pins change state. However in multiple cases for one reason or another we had to create our own solution. One of these cases is with the LiDAR sensor, as there were no Python libraries/solutions on the internet. We studied the [official developer documentation](https://www.elecrow.com/download/product/SLD06360F/LD19_Development%20Manual_V2.3.pdf) of the sensor, specifically the byte order in the serial communication. An image of that can be seen here:
 
 ![image showing the byte order](image-1.png)
@@ -55,7 +60,13 @@ We use a 'heartbeat' system between the two units. The Raspberry Pi sends a hear
 
 All of this code can be found in [src/RaspberryPi/ESP32_Service.py](/src/RaspberryPi/ESP32_Service.py) and [src/ESP/run.ino](/src/ESP/run.ino).
 
-For the Led&Key panel we used a preexisting Python library that enabled us to set the display and the individual LEDs or check is a button is pressed. Using the buzzer was also really simple, we just had to set the `+` pin to **HIGH** to start the sound and to **LOW** to stop it. For the IMU we opted to use `UART-RVC` communication protocol, where RVC stands for Robot Vacuum Cleaner, since its most commonly used to help navigate robot vacuum cleaners. We choose this mode because this was the simplest one to implement, the sensor just sends the positional data 100 times a second. For the encoders we registered the **A** and **B** pins as interrupt pins, and counted how many times they go from **HIGH** to **LOW** or vice-versa, per second, and this would tell us the speed of the robot. Steering with the servo is achieved by sending a `PWM` signal to the servo with the correct **dutycycle**. The same is true for the DC motor through the motor controller. More information about the mentioned libraries and how to install them can be found in the [software setup guide](#software-setup-guide).
+For the Led&Key panel we used a preexisting Python library that enabled us to set the display and the individual LEDs or check is a button is pressed.<br>Using the buzzer was also really simple, we just had to set the `+` pin to **HIGH** to start the sound and to **LOW** to stop it.
+
+For the IMU we opted to use `UART-RVC` communication protocol, where RVC stands for Robot Vacuum Cleaner, since its most commonly used to help navigate robot vacuum cleaners. We choose this mode because this was the simplest one to implement, the sensor just sends the positional data 100 times a second.
+
+For the encoders we registered the **A** and **B** pins as interrupt pins, and counted how many times they go from **HIGH** to **LOW** or vice-versa, per second, and this would tell us the speed of the robot, with one detection being one "tick". How this translates to cm/s depends on the gear ratio of the motor, the ratio of the differential gear and of course the diameter of the wheels. In our case one centimeter equeals roughly 12.4 ticks. Our maximum speed is around 3200 ticks/second which comes out to roughly 260 cm/sec, or `2.6 m/s`. During the open challange we drive at around 2500 ticks/s or `2 m/s`, and for the more precise obstacle challange at around 800 ticks/second, `0.65 m/s`. We go as slow as 300 ticks/s, `0.24 m/s` during parking.
+
+Steering with the servo is achieved by sending a `PWM` signal to the servo with the correct **dutycycle**. The same is true for the DC motor through the motor controller. More information about the mentioned libraries and how to install them can be found in the [software setup guide](#software-setup-guide).
 
 For the camera we used the native `picamera` library with the Python opencv library, `cv2` for accessing the camera feed and performing image analysis.
 
@@ -153,11 +164,11 @@ Works similarly to `findNearestPoint` except it detects the start and end point 
 Same as `findNearestObj` except it uses the gyro and the LiDAR to calculate the position relative to the bottom left corner of the current section, similarly to `findNearestPointAbs`.
 
 `mapPointToCam(pointX, pointY, pointZ)`<br>
-This function converts a point in 3D space, relative to the projection of the centre of the LiDAR on the mat to a pixel coordinate. After much thought we were able to reduce the problem to **two trigonometric functions**. First we calculate the X,Y,Z distance of the camera and the point using the known position of the camera. After this imagine the point of the camera and the given point viewed from above, and draw in the imaginary right triangle like so:![illustration showing said triangle](top-view.png)<br>(X axis is sideways, Y axis is forward, example green traffic sign is illustrated)
+This function converts a point in 3D space, relative to the projection of the centre of the LiDAR on the mat to a pixel coordinate. After much thought we were able to reduce the problem to **two trigonometric functions**. First we calculate the X,Y,Z distance of the camera and the point using the known position of the camera. After this imagine the point of the camera and the given point viewed from above, and draw in the imaginary right triangle like so:![illustration showing said triangle](top-view.png)<br>(X axis is sideways, Y axis is forward, example is detecting the top right point of a green traffic sign's front face)
 
 Now do the same but viewed from the side:
 ![Illustration showing said triangle](side-view.png)
-(Z axis is up, Y axis is forward, example green traffic sign is illustrated)
+(Z axis is up, Y axis is forward, example is detecting the top right point of a green traffic sign's front face)
 
 Using the known distances we can calculate α and β, which specify how many degrees the point is away from the centre of the camera horizontally and vertically. After measuring the `FOV` of the camera, assuming a linear releation between degrees and pixels (the image is not distorted) and factoring in the vertical (and possible horizontal) rotation of the camera we can calculate the pixel location of the object on the camera image:
 
@@ -250,7 +261,7 @@ On each straight section there could be 1 traffic sign on any row and any column
 
 So there really are only two movements we need to perfect, switching between two traffic signs and going straight. If the robot moves straight for the entire section (one obstacle or two obstacles of the same color) we call `correctWallDist` to combat gyro inaccuracy, since over 1 meter even 1° of error could result in considerable wall distance deviation.
 
-If the current section is the one with the parking space (the startin section) we set a `wallOffset` variable to the outer wall, since there can't be any traffic signs on the outer lane here. When calling `switchLane` to move to the outer lane instead of moving to the regular distance from the wall we add this variable to it, thereby avoiding the parking space.
+If the current section is the one with the parking space (the starting section) we set a `wallOffset` variable to the outer wall, since there can't be any traffic signs on the outer lane here. When calling `switchLane` to move to the outer lane instead of moving to the regular distance from the wall we add this variable to it, thereby avoiding the parking space.
 
 In the corner zones we simplified the movement to two possible scenarios, depending on the position of arrival to the zone. This can be on the inner lane or on the outer lane, depending on the color of the last traffic sign on the last straight section. To make straight and corner zones independent of each other both scenarios have to end on similar positions. This position was chosen to be about the center lane, so avoiding the first traffic sign will be about the same regardless of its color. In case the robot arrives from the outer lane it does a 90° arc then backs up to the wall. However since it could be arriving from a section with the parking space in it and due to this it could be much nearer the inner wall it won't have enough space for a full 90° turn. So instead it only does a 60° turn then while going back to the wall it straightens itself out. If the robot arrives from the outer lane then we don't have to worry about that. It goes near the front wall then does a backward arc, ending up at about the same position as the other scenario. The two scenarios:
 
