@@ -1,0 +1,8 @@
+{
+    "no-inline-html": false,
+    "line-length": false,
+    "no-bare-urls": false,
+    "single-h1": false,
+    "descriptive-link-text": false,
+    "no-trailing-punctuation": false
+}
