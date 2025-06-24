@@ -43,11 +43,11 @@ We installed a lot of sensors and other components on the car, here is a list of
 
 This section serves as an overview of the design philosophy of the robot. For more details about the actual driving and steering mechanism see [Drive](#drive), and for building instructions see [Building instructions](#building-instructions).
 
-Our robot utilizes ackermann steering geometry and differential drive. We have 3 decks, a bottom deck for the servo, driving mechanism and the power supply. On the middle deck we have the Raspberry Pi, the main control unit coded in python, responsible for the main challenge logic, and the ESP microcontroller, the secondary control unit coded in C, responsible for receiving sensor data and controlling the motors. The LiDAR sensor is is also mounted here. The third deck is about half the size of the other decks, it houses things like the motor driver, the IMU, the display panel and the step-down PSU.
+Our robot utilizes ackermann steering geometry and differential drive. We have 3 decks, a bottom deck (or lower deck) for the servo, driving mechanism and the power supply. On the middle deck we have the Raspberry Pi, the main control unit coded in python, responsible for the main challenge logic, and the ESP microcontroller, the secondary control unit coded in C, responsible for receiving sensor data and controlling the motors. The LiDAR sensor is is also mounted here. The third deck is about half the size of the other decks, it houses things like the motor driver, the IMU, the display panel and the step-down PSU.
 ![image showcasing the 3 decks on the robot](decks.png) ![image of the car with connections between components](conn_diagram.png)
 (Sketch that illustrates the connections between the different components of the robot)
 
-For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimise slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect-board which we made with the help of a professional. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is seperated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° verical tilt down. The final size of the robot is `TO BE MEASURED`
+For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimise slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect-board which we made with the help of a professional. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is seperated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° verical tilt down. The final size of the robot is 26.8 cm long, 17.9 cm wide and 20.9 cm high. It weighs 1246 grams.
 
 ## Wiring diagrams
 The colored squares represent the cable colors on the robot.
@@ -62,7 +62,7 @@ This illustration is most important for the source code, since everything is act
 A CAD model is also available in the [ESP_v8.sch](ESP_v8.sch) file.
 ### Raspberry Pi pinout with connections labeled:
 ![alt text](pinouts_pi.jpg)
-(NC-Not Connected, L&K-Led and Key panel)
+(L&K-Led and Key panel)
 ### Motor controller wiring:
 ![alt text](pinouts_mc.jpg)
 
@@ -106,7 +106,7 @@ In short, the inner wheel turn slightly more than the other, so the robot stays 
 
 The steering mechanism has to be assembled so the steering pivots are on the line between the steering kingpin and the center of the rear axle.
 
-![ackermann geometry illustrated](Ackermann_simple_design.svg.png)<br>(Image slightly edited from [Wikipedia](https://en.wikipedia.org/wiki/Ackermann_steering_geometry))
+![ackermann geometry illustrated](Ackermann_simple_design.svg.png)
 
 We use two kinds of turning, turning along an arc or turning until a target degree is reached using **PID** control with the gyro. For turning along an arc we can use this formula to calculate the correct servo angle for an arc given $R$ radius:
 $$θ=arctan \left( {H \over R} \right)$$
@@ -131,9 +131,9 @@ The moments of inertia were generated using the `numpy-stl` library, the rest we
 
 ![diagram](differential_illustration.png)
 
-($M$- DC Motor) `OUTDATED`
+($M$- DC Motor)
 
-## The design process of 3d printed parts `WIP`
+## The design process of 3d printed parts
 
 Designing and printing out different parts of the robot was one of our biggest task where we had to take a lot of things into account in order **for everything to work properly**. Sometimes we had to rely on **trial and error** to make sure everything was how we wanted it to be.
 
@@ -282,9 +282,9 @@ Then we repurposed the top deck's rear sawed off part as the third deck.
 
 These decks can be mounted on each other with large spacers. The steering mechanism we used from the Ackermann Intelligent Car also plays a role in the structural integrity of the robot.
 
-On the bottom deck we have the adorementioned steering mechanism, differential gearbox, the motor and the battery. How the differential gear-system is made up is detailed in the [Drive](#drive) and [The design process of 3D printed parts](#the-design-process-of-3d-printed-parts-outdated) sections. The motor has to be secured down, for this we used the original motor mounting bracket. The battery's position is not important as long as its secured down. This decks intentionally contains most of the heaviest components (the motor and the battery) in order to keep the center of gravity low.
+On the bottom deck we have the adorementioned steering mechanism, differential gearbox, the motor and the battery. How the differential gear-system is made up is detailed in the [Drive](#drive) and [The design process of 3D printed parts](#the-design-process-of-3d-printed-parts) sections. The motor has to be secured down, for this we used the original motor mounting bracket. The battery's position is not important as long as its secured down. This decks intentionally contains most of the heaviest components (the motor and the battery) in order to keep the center of gravity low.
 
-![bottom deck of the robot with all components](lower_deck_full.png)`OUTDATED`
+![bottom deck of the robot with all components](bottom_deck_full.png)
 
 The middle deck contains the main computing units of the robot, the Raspberry Pi and the ESP microcontroller with the custom-made interconnect panel. It also houses the LiDAR sensor, which has to be placed right on the front of the deck, upside down, as secured down with our custom 3D printed LiDAR bracket and ideally supplied with an at least a 230° vision free from any blocking elements. Under the Raspberry Pi is our 3D printed tunnel piece, which has to be installed in a way that both ensures backwards vision to the LiDAR, free from any interfering objects, such as loose cables, and also acts as a support for the Pi and the ESP board. The camera is also installed on this deck by 2 screws, behind the LiDAR. The buzzer can be fixed anywhere, we used a small strip of [3M Double Lock](https://www.3m.com/3M/en_US/dual-lock-reclosable-fasteners-us/) tape, so we can remove it if necessary.
 ![middle deck of the robot with all components](middle_deck_full.png)
