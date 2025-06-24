@@ -8,6 +8,8 @@ WRO has been quite a significant part of our lives for a few years now. While th
 
 ![1st place](1st.png)
 
+---
+
 ## The planning phase
 
 In the first phase of development, we mostly did **planning and information gathering.** We already learned last year just how important it is to collect information and have concrete plan. At our first meeting we wrote down what we needed to improve over last year, which areas of our robot required more work.
@@ -83,6 +85,7 @@ When working on the robot we realized a grave mistake we had made last year. **W
 
 ![evolution of our robot](evolution.webp)
 
+---
 
 ## Teamwork
 
@@ -99,4 +102,4 @@ We made huge improvements over last year, making the robot a lot faster and more
 
 ## Conclusion
 
-Overall we are **incredibly happy with how our robot turned out** and glad we took upon this challenge and went on this journey together. The process was hard, but worth it in the end and we hope to continue working on it in the future.
+Overall we are **incredibly happy with how our robot turned out** and glad we took upon this challenge and went on this journey together. We could successfully do all the things we had planned and even made some funny memories in the process. The process was hard, but worth it in the end and we hope to continue working on it in the future.
