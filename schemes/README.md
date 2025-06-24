@@ -127,7 +127,7 @@ The so-called mechanical impedances of the components ($Z_{force} = \frac{1}{m\c
 ![Impedance network of the car's drivetrain](motor_impedance_20250316.svg)
 
 From this, using a Jupyter notebook, all the parameters of the system could be calculated.
-The moments of inertia were generated using the `numpy-stl` library, the rest were of the values were measured manually. From this we concluded that with the current setup the transmission ratio should be changed as much as possible to favor lower torques and higher rpm. We designed two helix gears with 1:1 transmission, with Lego technic axle slots for heavy duty carbon fiber axles. We made sure to use ball bearings where the axles are supposed to rotate freely. The design process is further detailed in [The design process of 3D printed parts](#the-design-process-of-3d-printed-parts). A simple diagram showing this solution:
+The moments of inertia were generated using the `numpy-stl` library, the rest were of the values were measured manually. From this we concluded that with the current setup the transmission ratio should be changed as much as possible to favor lower torques and higher rpm. We designed two helix gears with 1:1 transmission with Lego technic axle slots for heavy duty carbon fiber axles, which gave us more than enough maximum speed at 2.6 m/s. We made sure to use ball bearings where the axles are supposed to rotate freely. The design process is further detailed in [The design process of 3D printed parts](#the-design-process-of-3d-printed-parts). A simple diagram showing this solution:
 
 ![diagram](differential_illustration.png)
 
