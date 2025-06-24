@@ -7,7 +7,7 @@ We are the StormsNGR team from Hungary, and we are competing in the 2025 WRO Fut
   - csabi@molnarnet.hu
 - **András Gräff** from [Érdi Vörösmarty Mihály High School](http://vmg-erd.hu/)
   - andrasgraff@gmail.com
-- **József Gräff** from [Budapest University of Technology and Economics](https://www.bme.hu/en/) Faculty of Mechanical Engineering
+- **József Balázs Gräff** from [Budapest University of Technology and Economics](https://www.bme.hu/en/) Faculty of Mechanical Engineering
   - graffjozsefb@gmail.com
 >Coach
 - Zsolt Molnár
