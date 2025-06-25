@@ -32,7 +32,7 @@ We installed a lot of sensors and other components on the car, here is a list of
 - **LiDAR sensor** [STL-19P, D500 development kit](https://www.waveshare.com/wiki/D500_LiDAR_Kit)
   - Dimensions 38.6 x 38.6 x 34.8 mm, range 0.02-12 m, frequency 5-15 Hz, accuracy ±45 mm
 - **Camera** [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/)
-  - FPC connector, standard lens, RAW10 color format, verical FOV up to 41°, horizontal up to 66°
+  - FPC connector, standard lens, RAW10 color format, vertical FOV up to 41°, horizontal up to 66°
 - **Ball bearings**
   - 3 pieces of 7(inner diameter)x19x6 mm and 1 piece of 6(inner diameter)x12x4 mm
 - **USB-TTL bridge** [CH341T-V3-M](https://www.hestore.hu/prod_10044421.html)
@@ -47,7 +47,7 @@ Our robot utilizes ackermann steering geometry and differential drive. We have 3
 ![image showcasing the 3 decks on the robot](decks.png) ![image of the car with connections between components](conn_diagram.png)
 (Sketch that illustrates the connections between the different components of the robot)
 
-For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimise slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect-board which we made with the help of a professional. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is seperated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° verical tilt down. The final size of the robot is 26.8 cm long, 17.9 cm wide and 20.9 cm high. It weighs 1246 grams.
+For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimize slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect-board which we made with the help of a professional. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is separated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° vertical tilt down. The final size of the robot is 26.8 cm long, 17.9 cm wide and 20.9 cm high. It weighs 1246 grams.
 
 ## Wiring diagrams
 The colored squares represent the cable colors on the robot.
@@ -133,7 +133,7 @@ The moments of inertia were generated using the `numpy-stl` library, the rest we
 
 ($M$- DC Motor)
 
-# The design process of 3d printed parts
+# The design process of 3D printed parts
 
 Designing and printing out different parts of the robot was one of our biggest task where we had to take a lot of things into account in order **for everything to work properly**. Sometimes we had to rely on **trial and error** to make sure everything was how we wanted it to be.
 
@@ -165,12 +165,12 @@ Designing and printing out different parts of the robot was one of our biggest t
   - Use your software's built in physics simulators to check for weak points and **always make sure it can handle the stress it may be placed under**.
   - When done export the file as an **.stl** so that a slicer can use it.
 
-  Don't worry if you don't know how to make 3d models yet, it is a lot easier than people might think. The process in simple terms just requires you to make a sketch/blueprint like below and extrude it out into 3D space.
+  Don't worry if you don't know how to make 3D models yet, it is a lot easier than people might think. The process in simple terms just requires you to make a sketch/blueprint like below and extrude it out into 3D space.
   
   ![Example of a sketch in Fusion 360](blueprint.png)
   
 ### 4. Exporting the G-code
-  We printed our parts with a *PRUSA mini+* and used *PrusaSlicer*, but any 3d printer and software will do as long as it has a **large enough print area** and supports the **right types of filament** (we use PLA but PETG should also work). We suggest that for more **aesthetic parts a 30% infill** is used and for **more structural ones a 60%**. It may also seem trivial but the **angle and orientation** in which the part is printed matters a lot to. For example **for tires a $45°$ tilt** is suggested to make sure that it **won't come apart parallel to the print lines.**
+  We printed our parts with a *PRUSA mini+* and used *PrusaSlicer*, but any 3D printer and software will do as long as it has a **large enough print area** and supports the **right types of filament** (we use PLA but PETG should also work). We suggest that for more **aesthetic parts a 30% infill** is used and for **more structural ones a 60%**. It may also seem trivial but the **angle and orientation** in which the part is printed matters a lot to. For example **for tires a $45°$ tilt** is suggested to make sure that it **won't come apart parallel to the print lines.**
 
 ### 5. Printing out the part
   Here there is not much to look out for, just make sure that the **printer's settings are right,** there is enough filament and the **supports are sufficient.**
@@ -181,7 +181,7 @@ Designing and printing out different parts of the robot was one of our biggest t
 
 ### The lidar mount
 
-  The lidar mount was the *first part* which we designed ourself and the part that makes it so that the lidar can see **exactly what we want it to see.** While the robot chassis had the right screw holes to mount it to begin with, the problem we faced relied on the angle in which the lidar shoots out its beams of light. It was slightly angled to shoot upwards. Because of this the lidar was **seeing above the walls** of the map which was a lot less than optimal. Our solution was to flip the lidar upside down to **lower the starting point of the beams and make them shoot slightly downwards instead.**
+  The lidar mount was the *first part* which we designed ourselves and the part that makes it so that the lidar can see **exactly what we want it to see.** While the robot chassis had the right screw holes to mount it to begin with, the problem we faced relied on the angle in which the lidar shoots out its beams of light. It was slightly angled to shoot upwards. Because of this the lidar was **seeing above the walls** of the map which was a lot less than optimal. Our solution was to flip the lidar upside down to **lower the starting point of the beams and make them shoot slightly downwards instead.**
   The main things we had to look out for in this part were:
   
   > **Making sure that it won't start tilting in random directions throughout the round.**
@@ -213,7 +213,7 @@ Designing and printing out different parts of the robot was one of our biggest t
 
   ![camera stand](camera.png)
 
-  The lid is as simple as this, so it doesn't even need to be 3d printed, a piece of cardboard would work just as fine.
+  The lid is as simple as this, so it doesn't even need to be 3D printed, a piece of cardboard would work just as fine.
   ![The lid](lid.png)
 
 
@@ -237,12 +237,12 @@ Designing and printing out different parts of the robot was one of our biggest t
 
 
 ### The differential gear frame
-  With a new differential we also required a new frame for said differential. The frame is what holds differential in the air so that it doesn't touch anything, and **has imbedded bearings to reduce the friction** between the frame and the axles. We used bearing last year as well but this year we made a few improvements in that area.
+  With a new differential we also required a new frame for said differential. The frame is what holds differential in the air so that it doesn't touch anything, and **has embedded bearings to reduce the friction** between the frame and the axles. We used bearing last year as well but this year we made a few improvements in that area.
 
   >- **Made the slots larger that can accompany larger bearings that provide more support and enables the usage of fitting rings on the axles.**
   >- **Split the model into two and added walls for the slots to make the bearings and the fitting rings unable to move.**
 
-  These changes made the frame a lot more secure, since we problems with the bearings and axles shifting previously.
+  These changes made the frame a lot more secure, since we had problems with the bearings and axles shifting previously.
 
   [Link to previous year's version](https://github.com/MoCsabi/WRO2024-FE-StormsNGR/blob/main/schemes/README.md#the-differential-gear-frame)
 
@@ -283,7 +283,7 @@ To make our robot fit its name **Dózer** a lot better, we made a few design par
 
 ## Conclusion
   
-  Designing custom 3d printed parts is hard and while sometimes we can get lucky, like with the lidar mount, **other times it may take a long time and multiple versions until we get it right.** The step by step guide was written according to the **things we learned during our process and things we will be doing in the future.** Making sure that a design is good can be one of the most important steps during the entire process of making a robot. It is of the upmost importance to ensure that **the amazing software one might have doesn't get bottlenecked by bad parts.**
+  Designing custom 3D printed parts is hard and while sometimes we can get lucky, like with the lidar mount, **other times it may take a long time and multiple versions until we get it right.** The step by step guide was written according to the **things we learned during our process and things we will be doing in the future.** Making sure that a design is good can be one of the most important steps during the entire process of making a robot. It is of the utmost importance to ensure that **the amazing software one might have doesn't get bottlenecked by bad parts.**
 
 # Building instructions
 The 3 decks of our robots are based on the decks from the HiWonder Ackermann Intelligent Car, but you could use any material. Screwholes won't be a problem either, just note the critical measurements and drill them yourself!
@@ -298,7 +298,7 @@ Then we repurposed the top deck's rear sawed off part as the third deck.
 
 These decks can be mounted on each other with large spacers. The steering mechanism we used from the Ackermann Intelligent Car also plays a role in the structural integrity of the robot.
 
-On the bottom deck we have the adorementioned steering mechanism, differential gearbox, the motor and the battery. How the differential gear-system is made up is detailed in the [Drive](#drive) and [The design process of 3D printed parts](#the-design-process-of-3d-printed-parts) sections. The motor has to be secured down, for this we used the original motor mounting bracket. The battery's position is not important as long as its secured down. This decks intentionally contains most of the heaviest components (the motor and the battery) in order to keep the center of gravity low.
+On the bottom deck we have the aforementioned steering mechanism, differential gearbox, the motor and the battery. How the differential gear-system is made up is detailed in the [Drive](#drive) and [The design process of 3D printed parts](#the-design-process-of-3D-printed-parts) sections. The motor has to be secured down, for this we used the original motor mounting bracket. The battery's position is not important as long as its secured down. This decks intentionally contains most of the heaviest components (the motor and the battery) in order to keep the center of gravity low.
 
 ![bottom deck of the robot with all components](bottom_deck_full.png)
 

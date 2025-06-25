@@ -30,7 +30,7 @@ We use a plethora of different sensors and motors to make the robot go. For some
 
 Our solution was to read the incoming data byte-by-byte and store every byte in an array until a full packet is received. The start of a packet is marked by the Header byte and since the packet byte-size is fixed, we read that many bytes. After this the packet is processed all at once. The sensor sends roughly 10 packets per second by default. Most numbers are in a two byte format, so we had to shift `M`ost `S`ignificant `B`yte then add the `L`east `S`ignificant `B`yte to get the full number. This part of the code can be found in [src/RaspberryPi/LidarService.py](/src/RaspberryPi/LidarService.py).
 We also had to speed up the sensor to its maximum velocity, enabling us to receive measurements up to 15 times a second instead of 10, which was necessary to keep up with the high speed movement of the robot. This was done by sending a specific `PWM` signal from the ESP at a specific frequency. This proved challenging due to poor and lackluster documentation, our solution can be found in [src/ESP/run.ino](/src/ESP/run.ino) in the setup function.
-However to receive 360 degrees worth of data 15 times a second would be 5400 measurements/sec, but the LiDAR only operates at 5000 Hz. This meant we wouldn't get measurement data for every degree. We solved this by detecting "gaps" and filling them with the measurement data of neighbouring degrees.
+However to receive 360 degrees worth of data 15 times a second would be 5400 measurements/sec, but the LiDAR only operates at 5000 Hz. This meant we wouldn't get measurement data for every degree. We solved this by detecting "gaps" and filling them with the measurement data of neighboring degrees.
 
 Another case where we had to create our own communication solution was between the ESP microcontroller and the Raspberry Pi. Initially we used `I2C`, but it was unreliable so we switched to serial communication. We created our own protocol for two-way communication between the two devices. Since the ESP takes care of most sensor readings and the Pi needs up-to-date information we decided on a packet-based system where the ESP sends all sensor information 100 times a second. This packet is structured like this:
 
@@ -59,7 +59,7 @@ For the Led&Key panel we used a preexisting Python library that enabled us to se
 
 For the IMU we opted to use `UART-RVC` communication protocol, where RVC stands for Robot Vacuum Cleaner, since its most commonly used to help navigate robot vacuum cleaners. We choose this mode because this was the simplest one to implement, the sensor just sends the positional data 100 times a second.
 
-For the encoders we registered the **A** and **B** pins as interrupt pins, and counted how many times they go from **HIGH** to **LOW** or vice-versa, per second, and this would tell us the speed of the robot, with one detection being one "tick". How this translates to cm/s depends on the gear ratio of the motor, the ratio of the differential gear and of course the diameter of the wheels. In our case one centimeter equeals roughly 12.4 ticks. Our maximum speed is around 3200 ticks/second which comes out to roughly 260 cm/sec, or `2.6 m/s`. During the open challange we drive at around 2500 ticks/s or `2 m/s`, and for the more precise obstacle challange at around 800 ticks/second, `0.65 m/s`. We go as slow as 300 ticks/s, `0.24 m/s` during parking.
+For the encoders we registered the **A** and **B** pins as interrupt pins, and counted how many times they go from **HIGH** to **LOW** or vice-versa, per second, and this would tell us the speed of the robot, with one detection being one "tick". How this translates to cm/s depends on the gear ratio of the motor, the ratio of the differential gear and of course the diameter of the wheels. In our case one centimeter equals roughly 12.4 ticks. Our maximum speed is around 3200 ticks/second which comes out to roughly 260 cm/sec, or `2.6 m/s`. During the open challenge we drive at around 2500 ticks/s or `2 m/s`, and for the more precise obstacle challenge at around 800 ticks/second, `0.65 m/s`. We go as slow as 300 ticks/s, `0.24 m/s` during parking.
 
 Steering with the servo is achieved by sending a `PWM` signal to the servo with the correct **dutycycle**. The same is true for the DC motor through the motor controller. More information about the mentioned libraries and how to install them can be found in the [software setup guide](#software-setup-guide).
 
@@ -78,7 +78,7 @@ There is also a Communications process. This process is responsible for receivin
 
 This thread is responsible for writing all log data into files about 10 times a second so that later we can "rewatch" the robot run using the RpiCode tool, this is further explained in the [RpiCode documentation](/other/RpiCode/README.md). This includes log messages, current angle of the robot but also the current view of the LiDAR 10 times a second. The logs also contain every "LiDAR operation" conducted in that 1/15 second, such as checking the distance in an angle using `readLidar` or using `findNearestPoint`. We found that this many file operations can sometimes cause delay, however this thread intentionally doesn't do anything critical, in the worst case we will receive log messages a little later.
 
-Finally, we run image analysis on a seperate processor core (not thread as that can be blocked by incorrect task scheduling), so this way the resource intensive processing doesn't interfere with the regular operation of the robot and more time-sensitive operations.
+Finally, we run image analysis on a separate processor core (not thread as that can be blocked by incorrect task scheduling), so this way the resource intensive processing doesn't interfere with the regular operation of the robot and more time-sensitive operations.
 
 ## Framework - functions
 
@@ -165,7 +165,7 @@ Now do the same but viewed from the side:
 ![Illustration showing said triangle](side-view.png)
 (Z axis is up, Y axis is forward, example is detecting the top right point of a green traffic sign's front face)
 
-Using the known distances we can calculate α and β, which specify how many degrees the point is away from the centre of the camera horizontally and vertically. After measuring the `FOV` of the camera, assuming a linear releation between degrees and pixels (the image is not distorted) and factoring in the vertical (and possible horizontal) rotation of the camera we can calculate the pixel location of the object on the camera image:
+Using the known distances we can calculate α and β, which specify how many degrees the point is away from the centre of the camera horizontally and vertically. After measuring the `FOV` of the camera, assuming a linear relation between degrees and pixels (the image is not distorted) and factoring in the vertical (and possible horizontal) rotation of the camera we can calculate the pixel location of the object on the camera image:
 
 $$x = \frac{640 px}{53\degree}\cdot \arctan(\frac{Z_{difference}}{Y_{difference}})$$
 $$y = \frac{480 px}{41.5\degree}\cdot (\arctan(\frac{X_{difference}}{Y_{difference}}) + 15 \degree)$$
@@ -173,7 +173,7 @@ $$y = \frac{480 px}{41.5\degree}\cdot (\arctan(\frac{X_{difference}}{Y_{differen
 (The image is 640px*480px, horizontal FOV is 53°, vertical FOV is 41.5°, horizontal rotation is 0°, vertical rotation is 15°)
 
 `detectObjectColor(Object obj)`<br>
-Detects the color of the object by first calculating the pixel location of the top left point of the traffic sign and the bottom right point of the traffic sign gathered from the `Object` dataclass parameter. Then utilising multiprocessing uses `cv2.mean` to calculate the average of the selected area, plus we add a safety border of around 5 pixels. Finally we subtract the `green` value from the `red` value, and compares this number to a well-calibrated border value to determine whether the sign is red or green.
+Detects the color of the object by first calculating the pixel location of the top left point of the traffic sign and the bottom right point of the traffic sign gathered from the `Object` dataclass parameter. Then utilizing multiprocessing uses `cv2.mean` to calculate the average of the selected area, plus we add a safety border of around 5 pixels. Finally we subtract the `green` value from the `red` value, and compares this number to a well-calibrated border value to determine whether the sign is red or green.
 
 ### High-level functions
 
@@ -242,7 +242,7 @@ In the obstacle challenge the robot completes straight sections independently of
 
 Simplification was our main principle when solving the obstacle challenge. First, we broke down the mat into 4 straight **sections** and four turns in the empty corner zones. We also broke down the straight sections into two main lanes, inner lane, which is the 40 cm wide inner space and outer space which is the outer 40 cm wide space. We also have a "middle lane", but that has no precise area, it's used to signal that the robot is neither in the inner nor the outer lane, for example in the start of each straight section after having turned. Our goal was to make only a handful of possible driving scenarios on the straight and corner zones.
 
-Start of the round the robot has to leave the parking space. This is a very precise operation so to eliminate slippage the robot moves at a **very** slow speed. Thankfully the robot can leave the parking space in one continous arc. However, depending on the traffic sign in front of the robot and the driving direction there are still 4 scenarios.<br>If the driving direction is counter-clockwise, the robot first arcs out so the traffic sign on the third row can be detected. Then the obstacle is avoided according to its color:
+Start of the round the robot has to leave the parking space. This is a very precise operation so to eliminate slippage the robot moves at a **very** slow speed. Thankfully the robot can leave the parking space in one continuous arc. However, depending on the traffic sign in front of the robot and the driving direction there are still 4 scenarios.<br>If the driving direction is counter-clockwise, the robot first arcs out so the traffic sign on the third row can be detected. Then the obstacle is avoided according to its color:
 ![scenarios showing parking out with driving direction counter-closkwise](park-right.png)
 (If there is no traffic sign we treat it as if there were a red traffic sign)
 
