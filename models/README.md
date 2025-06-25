@@ -1,0 +1,1 @@
+This folder contains the various 3D printing files. The design process and usage of these parts are documented int the [Hardware documentation](/schemes/README.md#the-design-process-of-3d-printed-parts).
