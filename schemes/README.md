@@ -133,15 +133,15 @@ The moments of inertia were generated using the `numpy-stl` library, the rest we
 
 ($M$- DC Motor)
 
-## The design process of 3d printed parts
+# The design process of 3d printed parts
 
 Designing and printing out different parts of the robot was one of our biggest task where we had to take a lot of things into account in order **for everything to work properly**. Sometimes we had to rely on **trial and error** to make sure everything was how we wanted it to be.
 
 ---
 
-### The steps of The design process:
+## The steps of The design process:
 
-#### 1. Coming up with the general shape and location of the part
+### 1. Coming up with the general shape and location of the part
   
   In This part we first had to take a close look at how our robot looked so far then try to figure out **how and where our soon to be designed part could fit.**
   Things we had to look out for:
@@ -152,35 +152,36 @@ Designing and printing out different parts of the robot was one of our biggest t
   After we found to correct location we made a very, **very simplistic sketch** of what we wanted.
   
   <a name="sketch"></a>
-  ![Sketch for the camera stand](/models/image.png)
+  ![Sketch for the camera stand](sketch.jpg)
 
-#### 2. Gathering usable documentation
+### 2. Gathering usable documentation
   This is maybe the most important part in the process, because the quality of the documentation available **can make or break a design**. While taking your own measurements is viable, it is a lot simpler to use a documentation and yields **more precise results**.
 
-#### 3. Making the model
+### 3. Making the model
   We used *Autodesk Fusion 360* for designing our parts, however any industrial software like *Autodesk Inventor* can be used as well. In the modelling process there are a couple of things to remember:
   
   - Make sure that any measurement given in a documentation seems realistic, **since we have seen mistakes even in official documentations**.
   - Always double check any calculation and check the dimensions relative to multiple sides, because **it may look alright from one side, but may be completely unusable from another**.
   - Use your software's built in physics simulators to check for weak points and **always make sure it can handle the stress it may be placed under**.
   - When done export the file as an **.stl** so that a slicer can use it.
+
+  Don't worry if you don't know how to make 3d models yet, it is a lot easier than people might think. The process in simple terms just requires you to make a sketch/blueprint like below and extrude it out into 3D space.
   
+  ![Example of a sketch in Fusion 360](blueprint.png)
   
-  ![Example of a sketch in Fusion 360](/models/fusion_sketch.png)
-  
-#### 4. Exporting the G-code
+### 4. Exporting the G-code
   We printed our parts with a *PRUSA mini+* and used *PrusaSlicer*, but any 3d printer and software will do as long as it has a **large enough print area** and supports the **right types of filament** (we use PLA but PETG should also work). We suggest that for more **aesthetic parts a 30% infill** is used and for **more structural ones a 60%**. It may also seem trivial but the **angle and orientation** in which the part is printed matters a lot to. For example **for tires a $45°$ tilt** is suggested to make sure that it **won't come apart parallel to the print lines.**
 
-#### 5. Printing out the part
+### 5. Printing out the part
   Here there is not much to look out for, just make sure that the **printer's settings are right,** there is enough filament and the **supports are sufficient.**
 
 ---
 
-### How we applied these steps and the difficulties we faced
+## How we applied these steps and the difficulties we faced
 
-#### The lidar mount
+### The lidar mount
 
-  The lidar mount was the *first part* which we designed ourself and the part that makes it so that the lidar can see **exactly what we want it to see.** While the robot chassis had the right screw holes to mount it to begin with, the problem we faced relied on the **angle in which the lidar shoots out its beams of light.** It was slightly angled to shoot upwards. Because of this the lidar was **seeing above the walls** of the map which was a lot less than optimal. Our solution was to flip the lidar upside down to **lower the starting point of the beams and make them shoot slightly downwards instead.**
+  The lidar mount was the *first part* which we designed ourself and the part that makes it so that the lidar can see **exactly what we want it to see.** While the robot chassis had the right screw holes to mount it to begin with, the problem we faced relied on the angle in which the lidar shoots out its beams of light. It was slightly angled to shoot upwards. Because of this the lidar was **seeing above the walls** of the map which was a lot less than optimal. Our solution was to flip the lidar upside down to **lower the starting point of the beams and make them shoot slightly downwards instead.**
   The main things we had to look out for in this part were:
   
   > **Making sure that it won't start tilting in random directions throughout the round.**
@@ -190,84 +191,99 @@ Designing and printing out different parts of the robot was one of our biggest t
   > **Mounting it securely while leaving enough space for a wide field of view.**
 
   We solved this by only mounting it from the back with two screws, which does give up a lot of stability, but we **still found it sufficient for this use case**.
+
+  > **Making the range of the Lidar as wide as possible while also allowing it to see backwards**
+
+  This was the easiest since we just had to have an empty slot in the back of the mount.
+
   [The documentation we used (Page 7 is the most important)](https://www.ldrobot.com/images/2023/05/23/LDROBOT_LD19_Datasheet_EN_v2.6_Q1JXIRVq.pdf)
+
+  This part worked flawlessly so we have been using it ever since last year's competition.
+
+  ![Lidar mount](lidar.png)
+
+### The camera stand
   
-  ![Picture of the final result](/models/mount_photo.webp)
+  The camera stand was one of the parts that needed an almost complete redesign over last year, but this time it did not require four iterations to get the final result.
+  The mounting area stayed the same, using two screws for security and having the main body elevated in order to **allow the Lidar's laser to pass through below it.**
+  The top part however required a complete redesign since we changed cameras. It needed to keep the camera at a **height of 20 cm with a depression angle of 15°** to get the correct image. This made the piece quite tall, so a few security bars were added for support. To mount the camera we made small pins that fit exactly into the screw holes of the camera. To make it so that it doesn't fall out, a lid can be slotted in from the top. Between the lid and the camera we also inserted a few pieces of paper to cushion it and make sure nothing gets damaged.
 
-  This design was very successful, we could use it until after the national finals. However after the finals **some minor, but necessary changes had to be made.**
+  [The blueprint we used](https://datasheets.raspberrypi.com/camera/camera-module-3-wide-mechanical-drawing.pdf)
+  [Link to previous year's version](https://github.com/MoCsabi/WRO2024-FE-StormsNGR/blob/main/schemes/README.md#the-camera-stand)
 
-  ![The second version](/models/mount_2.webp)
-  > There were two minor changes:
-  >- It was made slimmer slightly **increasing the visible area** for the lidar.
-  >- The middle section on the mounting was removed, allowing the **sensor to see what is behind.**
-  
-  This is the design **we are currently using** and hopefully will be using in the future without needing to make any redesigns.
+  ![camera stand](camera.png)
 
-#### The camera stand
-  The camera stand was the *second part* that we have designed, but due to its **height** and the **torque that can happen** because of it, it had to be partially redesigned multiple times. Its main goal was to **elevate our Pixy camera by about $10 cm$s and had it be rotated looking at the ground in a $45°$ angle.** The main reason for this was to control how much of the map it saw. We only wanted it to see the **current closest object**, however that was not something we could realistically achieve. Because of this, we wanted it to be as in the front as possible so we first decided to put it [on top of the lidar mount.](#sketch)
+  The lid is as simple as this, so it doesn't even need to be 3d printed, a piece of cardboard would work just as fine.
+  ![The lid](lid.png)
 
-  ![Image of the first version](/models/1st.png)
 
-  However this has caused some problems. In some places when the robot was going the torque that was generated **made the lidar under it tilt**, causing it to see the floor. To resolve this, we made a new design that was **no longer on top of the lidar, but further back.**
-
-  ![2nd design version 1](/models/2_1.png)
-
-  >This version had a couple of different changes:
-  >- **The height was increased** in account of the loss when taken of the lidar.
-  >- Mounting area was decreased due to the lack of space, **now using only two screw holes.**
-  >- A little bar was added on both sides to increase structural integrity, however this has **proved to be insufficient later on.**
-
-  Before we could even mount this one, it has bent too much and **snapped at one of the printing lines in the middle,** therefore some structural changes had to be made to make it stronger.
- 
-  ![2nd design version 2](/models/2_2.png)
-
-  > There were only two changes this time:
-  >- On top of the little bar on both sides, another set of **thicker bars have been added in the four corners,** which greatly improved stability.
-  >- Before printing it has been rotated by $90°$ so that the **printing lines would be in a stronger orientation.**
-
-  This version has worked for a long time, even if it was tilting a little, because the small base, until during one of our testings, a dog has run over the robot and **broke it at the screw holes.**
-  
-  ![2nd design version 3](/models/2_3.png)
-  
-  > Besides the text, there has only been one change in this version. The base was **heavily widened** and supporting triangles have been added, **eliminating the tilting and solidifying the structure.**
-
-  This was the version we were using during the national finals, but sadly after the finals, even though there were no design flaws in this part, **some changes were bound to happen** and it also affected this part.
-
-  ![2nd design final version](/models/2_4.webp)
-  >With this final design one substantial change was made:
-  >- The middle part was raised creating a **tunnel underneath**.
-
-  This change was made in order to **allow the lidar to see behind of itself.** It was very important however to make it **rigid** and not have the same problem as before with a dog breaking it. Another important thing was to make sure that the overall height of the part stayed the same, so that it **would't change how the camera sees things.**
-<br>
-
-  [The documentation we used](https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:dimensions&s[]=dimensions) (https://docs.pixycam.com/wiki/doku.php?id=wiki:v2:dimensions&s[]=dimensions)
-  
-  >*On the image it says that the two screw holes have a distance of $6mm$ however this is incorrect according to the description given below and calculations we did ourselves.*
    
-#### The tunnel
+### The tunnel
   We adjusted the lidar mount and camera stand to enable the **lidar to see backwards,** however another part was needed to be designed to make sure that **nothing obstructed the view.** This was the most simple model we ever made, since it really is just a **little tunnel** meant to clear the way.
   
-  ![Tunnel](/models/Tunnel.webp)
+  ![lidar tunnel](lidar_tunnel.png)
   
   It is mounted using four screw, which is a bit of an **overkill,** since realistically it won't really be put under any stress. Because of this we only ended up putting screws into the two rear holes.
 
-#### The gear
-  In the national finals we were allowed to use a form of electrical differential solution, which simplified a lot of things for us, but **this is not allowed on the word championship,** so a real differential gear had to be installed. We installed a **lego differential gear,** because of how great it can mesh together with other things, but this posed a new challenge. We had to somehow **adapt the engine's D shaft to the lego axle.**
-  ![Gear](/models/gear.webp)
+### The differential gear
+  This year we decided to make a custom differential and replace the old Lego one. This model required by far the most engineering knowledge.
+  The differential was designed with a few important factors considered:
+  >-  **To have a size similar to the previous so it would be easier to implement into the assembly.**
+  >-  **To have enough tolerances for 3D printing, but at the same time to minimize the backlash between the various gears and - of course - to achieve maximum efficiency.**
 
-  Our solution was to **download the *step file* of a lego compatible gear** and modify it to fit a D shaft. The middle had to be widened a bit so that the shaft would fit, but everything went as planned and **we could successfully insert this into our lego differential.**
+  In order to achieve this, we decided to use two helical gears, with one replacing the gear part of the old differential, while not changing the rest. The helical gears allow for better contact between the gears, and therefore a **higher efficiency when the car goes forwards.** Size wise both gears are the same size now (due to the 1:1 gear ratio), their diameters are about equal to the bigger gear in the old differential, so the main axle could stay almost identical to before, with only the motor's position changing slightly.
 
-#### The differential gear frame
-  The new differential gear worked flawlessly for a while but soon **a new problem arose.** Since the axles were holding the weight of the car, as they were turning, they were heavily rubbing against the lego housing and **started to carve away both of them.** The solution we came up with was to keep the lego differential gear, but change out its frame to a **3d printed one with ball bearings.**
-  ![Housing](/models/differential.webp)
-
-  This was by far the most complex model so far. Everything had to be precise. The bearings were inserted in the **5 holes at the sides.** One large bearing for the D shaft and four small ones for the lego axles. The bearings' job was to **rotate along with the axles to reduce friction und thus wear.** The reason why there are two holes at each side is so that by putting something larger than the bearings' holes on the axle we could essentially **lock the axles in place and secure them,** while also restricting how much they can wobble around. Some design elements were not for purely decoration, but to reduce the filament usage and make the print times faster.
+  ![differential gear](differential_gear.png)
 
 
-### Conclusion
+### The differential gear frame
+  With a new differential we also required a new frame for said differential. The frame is what holds differential in the air so that it doesn't touch anything, and **has imbedded bearings to reduce the friction** between the frame and the axles. We used bearing last year as well but this year we made a few improvements in that area.
+
+  >- **Made the slots larger that can accompany larger bearings that provide more support and enables the usage of fitting rings on the axles.**
+  >- **Split the model into two and added walls for the slots to make the bearings and the fitting rings unable to move.**
+
+  These changes made the frame a lot more secure, since we problems with the bearings and axles shifting previously.
+
+  [Link to previous year's version](https://github.com/MoCsabi/WRO2024-FE-StormsNGR/blob/main/schemes/README.md#the-differential-gear-frame)
+
+  ![bottom of the differential](diff_bot.png)
+  ![top of the differential](diff_top.png)
+
+### The assembly of the full differential gear
+
+![differential gear assembly](assembly.png)
+
+### Accessories for the differential gear
+
+  The differential gear and house works as is just fine, but for our use case we needed a few extras for it.
+
+#### The fitting rings
+
+  As mentioned above, the axles we used required fitting rings in order to fit cleanly into the bearings. The rings then were glued onto the axles, since the frame restricts the movement of the ring, this makes it that the **entire axle can only be moved if the frame itself is disassembled.**
+
+  ![fitting ring](ring.png)
+
+
+#### The axle holder
+
+  In our robot the differential was on the right side, one of the axles needed to be exceptionally long which would enlarge any potential bending. To counter this we made a securing device which is basically just a box with a bearing in it. Just like the frame, **this was also split in two,** but since this part is completely symmetrical, it only requires one model.
+
+  ![axle holder](holder.png)
+
+
+### Aesthetic pieces
+
+To make our robot fit its name **Dózer** a lot better, we made a few design parts for it as well.
+
+  ![Bulldozer shovel](shovel.png)
+  ![license plate](plate.png)
+
+
+---
+
+## Conclusion
   
   Designing custom 3d printed parts is hard and while sometimes we can get lucky, like with the lidar mount, **other times it may take a long time and multiple versions until we get it right.** The step by step guide was written according to the **things we learned during our process and things we will be doing in the future.** Making sure that a design is good can be one of the most important steps during the entire process of making a robot. It is of the upmost importance to ensure that **the amazing software one might have doesn't get bottlenecked by bad parts.**
-
 
 # Building instructions
 The 3 decks of our robots are based on the decks from the HiWonder Ackermann Intelligent Car, but you could use any material. Screwholes won't be a problem either, just note the critical measurements and drill them yourself!
