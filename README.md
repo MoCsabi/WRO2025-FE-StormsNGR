@@ -23,7 +23,7 @@ Links to our socials:
   - Cool posts and updates about our, and our sister-team StormsRMS' preparation for upcoming competitions
 
 # Abstract
-Our solution is an autonomous car powered by a Raspberry Pi coded in Python, responsible for the main challenge logic, and an ESP microcontroller coded in C, responsible for controlling the motors and processing sensor data. The two devices communicate using UART. We use a 360° 2D LiDAR combined with a gyro to always know where the robot is on the mat. Detection of the traffic sign's color is done by combining the output of the LiDAR with the camera feed to know exactly where the object is. We use ackermann steering geometry calibrated so the car can leave the parking space in one continous arc. Driving is powered by 1 DC motor through a differential gearbox designed from scratch, with a top speed of around 2.6 m/s.
+Our solution is an autonomous car powered by a Raspberry Pi coded in Python, responsible for the main challenge logic, and an ESP microcontroller coded in C, responsible for controlling the motors and processing sensor data. The two devices communicate using UART. We use a 360° 2D LiDAR combined with a gyro to always know where the robot is on the mat. Detection of the traffic sign's color is done by combining the output of the LiDAR with the camera feed to know exactly where the object is. We use ackermann steering geometry calibrated so the car can leave the parking space in one continuous arc. Driving is powered by 1 DC motor through a differential gearbox designed from scratch, with a top speed of around 2.6 m/s.
 
 # Table of contents
 
@@ -31,11 +31,11 @@ Our solution is an autonomous car powered by a Raspberry Pi coded in Python, res
 ### [Ideas and principles](/Ideas_and_principles.md)
 ### [Hardware documentation](/schemes/README.md)
 ### [Software documentation](/src/README.md)
-### [Measurent- The robot's mechanical characteristics](/The%20robot's%20mechanical%20characteristics.md)
+### [measurement- The robot's mechanical characteristics](/The%20robot's%20mechanical%20characteristics.md)
 ### [RpiCode development tool documentation](/other/RpiCode/README.md)
 ### [Videos](/video/video.md)
 ### [Team Photos](/t-photos/)
 ### [Vehicle Photos](/v-photos/)
 
 # Special thanks
-Special thanks to József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
+Special thanks to Levente Molnár for being an honorary member of our team,József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
