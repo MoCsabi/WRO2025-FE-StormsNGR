@@ -69,7 +69,7 @@ class Object:
         objEndRel=[self.objEnd[0]-self.relToAbsX,self.objEnd[1]-self.relToAbsY]
         return Object(objStartRel,objEndRel)
     
-CAMERA_ANGLE_OFFSET=-1 #how much (degrees) the camera is rotated to the left
+CAMERA_ANGLE_OFFSET=0 #how much (degrees) the camera is rotated to the left
 HORIZONTAL_FOV=53.1
 VERTICAL_FOV=41.49
 CAMERA_VERTICAL_TILT=11.00 #10.76
@@ -921,11 +921,12 @@ def correctWallDist(wallDirection):
     # setSGyroLimits(SGYRO_LIMITED)
     if d0>targetLeftWallDist:
         go(defaultSpeed,-10)
-        while (readAbsLidar(90*wallDirection) if wallDirection==DIRECTION_LEFT else 100-readAbsLidar(90*wallDirection))>=targetLeftWallDist: sleep(0.01)
+        while (readAbsLidar(90*wallDirection) if wallDirection==DIRECTION_LEFT else 100-readAbsLidar(90*wallDirection))>=targetLeftWallDist: sleep(0.01) 
     else:
         go(defaultSpeed,10)
         while (readAbsLidar(90*wallDirection) if wallDirection==DIRECTION_LEFT else 100-readAbsLidar(90*wallDirection))<=targetLeftWallDist: sleep(0.01)
     go(defaultSpeed,0)
+    waitForHeading()
     setSGyroLimits(SGYRO_NORMAL)
     log.debug("correctWallDist finished, target %s actual %s frontdist %s"%(targetLeftWallDist,(readAbsLidar(90*wallDirection) if wallDirection==DIRECTION_RIGHT else 100-readAbsLidar(90*wallDirection)),readAbsLidar(0)))
 LATENCY_RIGHT=240
@@ -989,7 +990,7 @@ def turnCorner(goForward=False):
             stop()
             go(-defaultSpeed,90*direction)
             waitForHeading()
-            waitLidarBehind(50)
+            waitLidarBehind(35)
             stop()
 
         lane=-0.5*direction
@@ -998,10 +999,14 @@ def turnCorner(goForward=False):
             waitAbsLidar(0,55)
             arc(90*direction)
         else:
+            waitAbsLidar(0,80)
+            go(defaultSpeed,-20*direction)
+            waitAbsLidar(0,60)
+            go(defaultSpeed,0)
             waitAbsLidar(0,38)
             stop()
             arc(90*direction,-defaultSpeed)
-            waitLidarBehind(50)
+            waitLidarBehind(35)
             stop()
         lane=0.5*direction
     heading0+=90*direction
@@ -1131,8 +1136,8 @@ def initLoop(open=False):
     # cam.configure(config)
     # cam.start()
     if open:
-        defaultSpeed=2500
-        defaultTurnSpeed=1700
+        defaultSpeed=2000
+        defaultTurnSpeed=1500
     else: 
         defaultSpeed=800
         slowSpeed=400
@@ -1400,7 +1405,7 @@ def obstacleChallengeRun():
             arc(0,slowSpeed,100,steep=True)
             lane=LANE_LEFT
     elif direction==DIRECTION_RIGHT:
-        arc(50,superSlowSpeed,steep=True)
+        arc(46,superSlowSpeed,steep=True)
         stop()
         obj:Object=findNearestObject((10,5),(40,80))
         log.debug("storing %s %s"%obj.center)
@@ -1411,7 +1416,7 @@ def obstacleChallengeRun():
             col=1
         
         if col==GREEN:
-            arc(0,slowSpeed,50,steep=True)
+            arc(0,slowSpeed,25,steep=True)
             lane=LANE_LEFT
         else: #RED OR NONE
             arc(90,slowSpeed,steep=True)
@@ -1436,7 +1441,7 @@ def obstacleChallengeRun():
     turnCorner()
 
     i=1
-    while i<finalSection:
+    while i<finalSection: #MAIN LOOP
         log.debug("parkside: %s"%parkSide)
     # for i in range(1,13):
         section=i
@@ -1467,26 +1472,35 @@ def obstacleChallengeRun():
 
         if doDetection:
             #DETECTION
-            signObj = findNearestObjectAbs((30,80),(70,210),back=True) #find first obstacle in section
-            sx, sy = signObj.toAbsolute().center
-            log.debug("sx,sy %s %s"%(sx,sy))
-            signRow = 0 if sy < 125 else 1 if sy<175 else 2
-            signColumn = -1 if sx < 50 else 1
-            signColor=investigateObjectColor(signObj) #color of first obstacle in section
-            trafficSignMatrix[section%4][signRow] = signColor * signColumn #store it
+            #possible fix to go up to third sign
+            signObj = findNearestObjectAbs((20+leftLaneOffset,80),(80-rightLaneOffset,160),back=True)
+            # signObj = findNearestObjectAbs((20+leftLaneOffset,80),(80-rightLaneOffset,210),back=True) #find first obstacle in section
+            
+            
+            if signObj.empty:
+                signRow=-1 #signal that there are no obstacles on the first and middle rows
+                signColor=-direction #will go to outer
+            else:
+                sx, sy = signObj.toAbsolute().center
+                log.debug("sx,sy %s %s"%(sx,sy))
+                signRow = 0 if sy < 125 else 1 #if no third sign remove last case
+                signColumn = -1 if sx < 50 else 1
+                signColor=investigateObjectColor(signObj) #color of first obstacle in section
+                trafficSignMatrix[section%4][signRow] = signColor * signColumn #store it
             if section== 4:
                 doDetection = False
         go(defaultSpeed,0)
         if doDetection:
             #STILL DETECT
             switchLane(LANE_LEFT if signColor == GREEN else LANE_RIGHT) #switch to the correct lane (by first detected obstacle)
-            if signRow == 0: #first detected obstacle is in row 0->there could be a obstacle on row 3
-                waitLidarBehind(70,decreasing=False)
-                setTargetSpeed(600)
-                waitLidarBehind(110,decreasing=False)
-                signObj = findNearestObjectAbs((30,180),(70,220),back=False)
-                sx, sy = signObj.toAbsolute().center
-                if not signObj.empty: #there is a third obstacle
+            if signRow == 0 or signRow==-1: #first detected obstacle is in row 0 OR no obstacle on 0 and 1->there could be a obstacle on row 3
+                waitLidarBehind(100,decreasing=False)
+                signObj = findNearestObjectAbs((30,180),(70,220),back=False) #first check detection
+                if not signObj.empty:
+                    stop()
+                    signObj = findNearestObjectAbs((30,180),(70,220),back=False)
+                    sx, sy = signObj.toAbsolute().center
+                # if not signObj.empty: #there is a third obstacle
                     signRow = 2
                     signColumn = -1 if sx < 50 else 1
                     signColor=investigateObjectColor(signObj,back=False)
@@ -1510,9 +1524,10 @@ def obstacleChallengeRun():
                 log.info("no row 1-2, going to outer")
                 waitLidarBehind(120,decreasing=False)
                 switchLane(-direction,insideWall=isInParkingSection())
-            elif not isInParkingSection():
-                waitAbsLidar(0,150)
-                correctWallDist(lane)
+            else:
+                waitAbsLidar(0,160)
+                correctWallDist(lane if not isInParkingSection() else direction)
+                
 
         #JOINED
         goForward=False
@@ -1542,8 +1557,9 @@ def obstacleChallengeRun():
         waitCM(10)
         stop()
         go(-defaultSpeed,0)
-        if direction==DIRECTION_RIGHT: waitLidarBehind(90)
+        if direction==DIRECTION_RIGHT: waitLidarBehind(100)
         else: waitAbsLidar(0,165,decreasing=False)
+        stop()
         go(superSlowSpeed,0)
     else:
         switchLane(LANE_LEFT*direction) #outer
@@ -1693,35 +1709,36 @@ def park():
     stop()
     log.debug("dist from front wall %s left %s right %s h %s"%(readAbsLidar(-90),readAbsLidar(0),readAbsLidar(90),getHeading()))
     go(-superSlowSpeed,90*direction)
-    waitLidarBehind(100-54.5)
+    waitLidarBehind(49)
     # waitAbsLidar(90*direction,54.5,decreasing=False)
     arc(-180 if direction==DIRECTION_LEFT else 0,-superSlowSpeed,steep=True)
     stop()
     go(superSlowSpeed,-180 if direction==DIRECTION_LEFT else 0)
     waitAbsLidar(180 if direction==DIRECTION_LEFT else 0,12.5)
     stop()
-    while readAbsLidar(-90*direction)>10.5:
-        setSteerMode(SMODE_NONE)
-        steer(-100)
-        sleep(0.3)
-        setTargetSpeed(-superSlowSpeed)
-        setVMode(VMODE_BACKWARD)
-        waitCM(-1.5)
-        stop()
-        arc(0, -superSlowSpeed,steep=True)
-        stop()
-        # steer(100)
-        # sleep(0.3)
-        # setTargetSpeed(-superSlowSpeed)
-        # setVMode(VMODE_BACKWARD)
-        # waitCM(-3)
-        # stop()
-        setSteerMode(SMODE_NONE)
-        steer(0)
-        sleep(0.3)
-        go(superSlowSpeed,0)
-        waitAbsLidar(0 if direction==DIRECTION_RIGHT else 180,12.5)
-        stop()
+    #PRECISION PARKING
+    # while readAbsLidar(-90*direction)>10.5:
+    #     setSteerMode(SMODE_NONE)
+    #     steer(-100)
+    #     sleep(0.3)
+    #     setTargetSpeed(-superSlowSpeed)
+    #     setVMode(VMODE_BACKWARD)
+    #     waitCM(-1.5)
+    #     stop()
+    #     arc(0 if direction==DIRECTION_RIGHT else 180, -superSlowSpeed,steep=True)
+    #     stop()
+    #     # steer(100)
+    #     # sleep(0.3)
+    #     # setTargetSpeed(-superSlowSpeed)
+    #     # setVMode(VMODE_BACKWARD)
+    #     # waitCM(-3)
+    #     # stop()
+    #     setSteerMode(SMODE_NONE)
+    #     steer(0)
+    #     sleep(0.3)
+    #     go(superSlowSpeed,0 if direction==DIRECTION_RIGHT else 180)
+    #     waitAbsLidar(0 if direction==DIRECTION_RIGHT else 180,12.5)
+    #     stop()
 
 
 
@@ -1773,6 +1790,7 @@ def testRun():
     leftLaneOffset=20
     
     log.debug("defaulstpeed %s"%defaultSpeed)
+    log.debug("oc %s"%detectObjectColor(findNearestObject((-10,10),(10,20))))
     go(superSlowSpeed,0)
     waitCM(100)
     stop()

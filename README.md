@@ -32,7 +32,7 @@ Our solution is an autonomous car powered by a Raspberry Pi coded in Python, res
 ### [Hardware documentation](/schemes/README.md)
 ### [Software documentation](/src/README.md)
 ### [measurement- The robot's mechanical characteristics](/The%20robot's%20mechanical%20characteristics.md)
-### [RpiCode development tool documentation](/other/RpiCode/README.md)
+### [RpiCode development tool documentation](/other/README.md)
 ### [Videos](/video/video.md)
 ### [Team Photos](/t-photos/)
 ### [Vehicle Photos](/v-photos/)
