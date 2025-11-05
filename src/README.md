@@ -238,9 +238,9 @@ stop
 
 ### Obstacle challenge
 
-In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color of the traffic signs. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
+In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color of the traffic signs. After the first lap it follows an opimized path. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
 
-Simplification was our main principle when solving the obstacle challenge. First, we broke down the mat into 4 straight **sections** and four turns in the empty corner zones. We also broke down the straight sections into two main lanes, inner lane, which is the 40 cm wide inner space and outer space which is the outer 40 cm wide space. We also have a "middle lane", but that has no precise area, it's used to signal that the robot is neither in the inner nor the outer lane, for example in the start of each straight section after having turned. Our goal was to make only a handful of possible driving scenarios on the straight and corner zones.
+Simplification was our main principle when solving the obstacle challenge. First, we broke down the mat into 4 straight **sections** and four turns in the empty corner zones. We also broke down the straight sections into two main lanes, inner lane, which is the 40 cm wide inner space and outer space which is the outer 40 cm wide space. We also have a "middle lane", but that has no precise area, it's used to signal that the robot is neither in the inner nor the outer lane, for example in the start of each straight section after having turned during the first lap. Our goal was to make only a handful of possible driving scenarios on the straight and corner zones.
 
 Start of the round the robot has to leave the parking space. This is a very precise operation so to eliminate slippage the robot moves at a **very** slow speed. Thankfully the robot can leave the parking space in one continuous arc. However, depending on the traffic sign in front of the robot and the driving direction there are still 4 scenarios.<br>If the driving direction is counter-clockwise, the robot first arcs out so the traffic sign on the third row can be detected. Then the obstacle is avoided according to its color:
 ![scenarios showing parking out with driving direction counter-closkwise](park-right.png)
@@ -248,8 +248,8 @@ Start of the round the robot has to leave the parking space. This is a very prec
 
 If the driving direction is clockwise, then the robot will have to avoid the traffic sign on the middle row *or* the one on the last row. The robot moves into a position where it can detect the color of potential traffic signs on the second *and* third row. After this it avoids it according to its color:
 ![scenarios showing parking out with driving direction clockwise](park-left.png)
-(There can only be one traffic sign, either in the second or third row. There can also be no traffic sign there, which we treat as if a green traffic sign were there.)
-
+(There can only be one traffic sign, either in the second or third row. There can also be no traffic sign there, which we treat as if a red traffic sign were there.)
+#### Detection lap
 On each straight section there could be 1 traffic sign on any row and any column or 2 traffic signs, one on the first row and one on the third row. This makes too many combinations, so we halved them by ignoring the column of the obstacle, always avoiding them as if they were occupying both spaces. At the start of each section we can check the color of the first traffic sign, note its location and switch to the correct lane. If the detected obstacle was on the first row, the robot also checks the third row in the middle of the section, and switches lanes if needed. This way there are only a few scenarios for each section.
 
 ![image of possible path](path_ii.png) ![image of possible path](path_io.png) ![image of possible path](path_oi.png) ![image of possible path](path_oo.png)
@@ -264,7 +264,28 @@ In the corner zones we simplified the movement to two possible scenarios, depend
 
 After each turn we set an angle offset variable, same way as in Open Challenge, to ensure front is always 0°, right is 90° and so on.
 
-After completing the first lap we no longer have to detect the color of the obstacles, which leaves the door open for further optimizations. We currently don't utilize these however, to ensure maximum reliability.
+After completing the first lap we no longer have to detect the color of the obstacles, which leaves the door open for further optimizations.
+
+#### Optmized laps
+
+After all obstacles have been detected, the robot follows a much more optimized path. During the staright sections it's movement is still constained to the two lanes, but turning around at the corner is where most we were able to cut down on lap times.
+
+The robot is able to complete the turn from one lane to another in one continous arc, a massive improvement from the detection laps' compley manouvre. Since the robot already knows the color of the next obstacle, it can make one of the following 4 turns based on it's current lane and the target lane:
+
+![Two inner turns illustarted](corner_i.png)
+![Two outer turns illustarted](corner_o.png)
+
+Although the robot is able to complete these turns in one arc, sometimes previous delays stack up, and it might already be over it's target position. This is detected dinamically and is corrected by backing up. This induces a small delay, however the time gained is still massive.
+
+![Turn correction illustrated](corner_corr.png)
+
+Here's what an optimized lap might look like:
+
+![Optimized lap](optimized_lap.png)
+
+With these optimizations we were able to shave down about 70 seconds from our run time, without secrificing simplicity or reliability.
+
+#### Parking
 
 After completing 3 laps, just before entering the starting section the robot starts the parking procedure. We again strived for simplicity and decided to develop **one** parking maneuver and fine tune it. If there is a traffic sign on the first row of the section it still has to avoid it in the correct direction. If according to the color the robot has to move to the outer lane, or there is no traffic sign there then the robot completes parking like so:
 ![illustration showing unified parking](unified-parking.png)
