@@ -34,10 +34,19 @@ However to receive 360 degrees worth of data 15 times a second would be 5400 mea
 
 Another case where we had to create our own communication solution was between the ESP microcontroller and the Raspberry Pi. Initially we used `I2C`, but it was unreliable so we switched to serial communication. We created our own protocol for two-way communication between the two devices. Since the ESP takes care of most sensor readings and the Pi needs up-to-date information we decided on a packet-based system where the ESP sends all sensor information 100 times a second. This packet is structured like this:
 
-| isSynced | heading | encoderLeft | encoderRight | speed | vMode | sMode | logVar |
-|---|---|---|---|---|---|---|---|
-| 1 byte | 4 bytes | 4 bytes | 4 bytes | 4 bytes | 1 byte | 1 byte | 4 bytes |
-| Is the ESP synced with the Pi | IMU heading angle | -EMPTY- since we have no left motor, legacy value | Right motor encoder position | Speed of the motors in encoder ticks/second | Velocity Mode, describes the current state of the motors such as forward, braking or unregulated | Steering mode, can be IMU-controlled, arcing or free | Log variable, used for debugging |
+| isSynced | heading | encoderLeft | encoderRight | speed | vMode | sMode | logVar | checkSum |
+|---|---|---|---|---|---|---|---|---|
+| 1 byte | 4 bytes | 4 bytes | 4 bytes | 4 bytes | 1 byte | 1 byte | 4 bytes | 4 bytes |
+| Is the ESP synced with the Pi | IMU heading angle | -EMPTY- since we have no left motor, legacy value | Right motor encoder position | Speed of the motors in encoder ticks/second | Velocity Mode, describes the current state of the motors such as forward, braking or unregulated | Steering mode, can be IMU-controlled, arcing or free | Log variable, used for debugging | checkSum value |
+
+### Checksum
+In every packet a checksum value is included. This is calculated by taking the modulus of every field with 256, adding them together, taking the modulud with 256 again and finally adding one. Here's what it looks like in practice:
+```python
+((isSynced % 256) + (heading % 256) + ... + (logVar % 256) % 256) + 1
+```
+This value is also calculated by the Raspberry Pi, and if the sent value doesn't match the packet is invalidated. The extra 1 is added so a stream of 0-s isn't a valid packet. The purpose of this checksum field is to help detect and fix communications problems with a helpful side-effect of possibly saving a run, it is not the fix itself.
+
+### Commands
 
 Since the ESP also controls the motors the Raspberry Pi needs to be able to send commands. These commands can be sent anytime, but they also follow a structure:
 
@@ -195,7 +204,7 @@ Turns the corner at the and of a section. It can turn two ways depending on the 
 
 ### Open challenge
 
-In the open challenge the robot first determines the driving direction, then goes to the outer lane and completes 3 laps while staying on the outer lane the whole time.
+In the open challenge the robot first determines the driving direction, then goes to the outer lane and completes 3 laps while staying on the outer lane the whole time, accelerating and decelerating to lower lap times but maintain precision where it counts.
 
 The strategy of the placement of the robot inside the selected starting zone by us is the following:
 
@@ -204,6 +213,10 @@ The strategy of the placement of the robot inside the selected starting zone by 
 We try to have the robot near the center of the lane vertically, and somewhere in the middle horizontally.
 
 At the start of the round the robot has to recognize the driving direction. This is done in multiple steps. First, the robot checks if it is directly next to a wall using the LiDAR sensor. This is only possible if the starting zone is one of the middle ones and the wall is on the outer position in the starting section, as can be seen on the previous illustration. If it is next to a wall that determines the driving direction for certain. If the wall is to the left of the robot then it will have to turn left at the corners and if it's to the right, then right. If a close wall was detected the robot will first move to the center of the available space by going at a 45° angle until the distance to the outer wall is half the available space (30 centimeters), then continue the round as normal.
+
+An illustration showcasing direction detection:
+
+![illustartion](walldetect.png)
 
 ```python
 if close wall detected:
@@ -220,7 +233,7 @@ if close wall detected:
 
 If there are no close walls the robot will decide the driving direction using the LiDAR. To make the measurements reliable it first goes forward, and then using the powerful `findNearestPointAbs` function checks which direction the open space is, and from this determines the driving direction.
 
-After this both cases join, and the robot enters a simple loop which consists of going straight and arc-ing in the right, previously decided direction in the corners. The robot goes forward until the distance from the front wall is so a 90° arc will end in the next straight section's outer lane. Since the robot only drives in the outer lane the walls' randomization is effectively ignored, therefore reducing the possible scenarios we have to test, enabling us to test these few scenarios more, and in turn increases the run's constancy. After every turn we set an angle offset variable so that "forward" will always be 0°, this way the 4 straight sections and turns are exactly the same. This can be seen in the following pseudo-code segment:
+After this both cases join, and the robot enters a simple loop which consists of going straight and arc-ing in the right, previously decided direction in the corners. The robot goes forward until the distance from the front wall is so a 90° arc will end in the next straight section's outer lane. To maximize the speed of the robot while keeping the corner turns precise the robot accelerates in the beginning of the straight sections and decelerates before taking the turn. Since the robot only drives in the outer lane the walls' randomization is effectively ignored, therefore reducing the possible scenarios we have to test, enabling us to test these few scenarios more, and in turn increases the run's constancy. After every turn we set an angle offset variable so that "forward" will always be 0°, this way the 4 straight sections and turns are exactly the same. This can be seen in the following pseudo-code segment:
 
 ```python
 repeat 12 times:
@@ -238,7 +251,11 @@ stop
 
 ### Obstacle challenge
 
+<<<<<<< Updated upstream
 In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color of the traffic signs. After the first lap it follows an opimized path. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
+=======
+In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color and position of the traffic signs. After the first lap it follows an opimized path. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
+>>>>>>> Stashed changes
 
 Simplification was our main principle when solving the obstacle challenge. First, we broke down the mat into 4 straight **sections** and four turns in the empty corner zones. We also broke down the straight sections into two main lanes, inner lane, which is the 40 cm wide inner space and outer space which is the outer 40 cm wide space. We also have a "middle lane", but that has no precise area, it's used to signal that the robot is neither in the inner nor the outer lane, for example in the start of each straight section after having turned during the first lap. Our goal was to make only a handful of possible driving scenarios on the straight and corner zones.
 
