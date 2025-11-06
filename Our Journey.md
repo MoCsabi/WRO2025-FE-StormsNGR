@@ -67,6 +67,36 @@ We also needed some way to further stabilize the run. An issue that came up some
 
 Just like Lidar, we had issues with the refresh rate of the gyro as well, but with turning. However we could use a more robust solution this time, since the gyro on outputs one value and that value cannot have big jumps in it. We decided on using an interpolation method, basically **predicting the gyro values based on previous data,** allowing us to end turns at just the right time.
 
+### Custom interconnect PCB
+
+In order to save some space and ensure proper
+wiring, we designed a custom PCB in [KiCad](https://www.kicad.org/). The PCB is designed to
+house the ESP, and to properly group the various output pins
+we need to connect to the other parts of the system according to the following schematic:
+
+![PCB wiring schematic](schemes/PCB_schematic.png)
+
+Two mounting holes were added to allow us to affix the PCB using 2 M3 screws. In order to save some space, we also added a few redundant pins to the `GYRO1` element. This let us put the IMU right on the top of the PCB.
+
+As a safety precaution and to ensure extensibility, all ESP pins were mirrored to their respective sides. This proved essential, because we failed to notice a critical mistake before ordering the PCB. ENC1 and ENC2 were 1 pin higher (below the +3V3 label), meaning that instead of ENC1 being connected to a programmable GPIO pin, it connected to the EN pin. This meant that, whenever the pin got any power, the enable pin triggered a reset in the ESP. While we lacked the time to order a new PCB before the competition, we could use a jumper connected to one of the pin mirrors to amend this issue. As for the files themselves, all PCB design documents contain a version where this wiring mistake has been fixed.
+
+After all wiring has been laid out, the final PCB layout is as follows:
+
+![PCB wiring layout](schemes/PCB_design.png)
+
+*Note: the red wires are on the top, the blue ones are on the bottom of the PCB, which let us connect everything in a clear, simple matrix layout without collisions*
+
+Some extra rules had to be employed in order to ensure the PCB working properly. First, the GND and +3V3 as well as +5V wires were thickened, since they deliver much more current than everything else. Another big factor was the 5V wiring itself: the ESP could either get its 5 volt power through the built in pin or USB-C port, but not both without that causing issues (for example, it managed to break the USB port of one of our ESP-s). Because of this, a jumper bridge has been added, if the `ESP32 5V SWITCH` pins are not connected, the ESP must be supplied through the USB port, otherwise power delivery is done through the dedicated pin.
+
+This was the final PCB design:
+
+![PCB render](schemes/PCB_render.png)
+
+After every factor mentioned above has been dealt with, a BOM assembled, and the PCB ordered, the PCB was successfully integrated into the car (besides the EN miswiring mentioned above).
+
+The PCB project itself, as well as the BOM we used to order the final pcb can be found in the 
+[schemes/wro_nyak](/schemes/wro-nyak/) subfolder.
+
 ### Troubleshooting
 
 In the development process we also encountered some rather peculiar and informative issues. Those are listed below:
