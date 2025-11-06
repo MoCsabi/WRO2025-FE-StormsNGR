@@ -3,12 +3,12 @@ We are the StormsNGR team from Hungary, and we are competing in the 2025 WRO Fut
 
 ## The team
 >Team members
-- **Csaba Molnár** from [Érdi Vörösmarty Mihály High School](http://vmg-erd.hu/)
+- **Csaba Molnár** from [Budapest University of Technology and Economics](https://www.bme.hu/en) Faculty of Electrical Engineering and Informatics
   - csabi@molnarnet.hu
-- **András Gräff** from [Érdi Vörösmarty Mihály High School](http://vmg-erd.hu/)
+- **András Gräff** from [Budapest University of Technology and Economics](https://www.bme.hu/en) Faculty of Mechanical Engineering
   - andrasgraff@gmail.com
-- **József Balázs Gräff** from [Budapest University of Technology and Economics](https://www.bme.hu/en/) Faculty of Mechanical Engineering
-  - graffjozsefb@gmail.com
+- **Levente Molnár** from [Sóskút Károly Andreetti elementary school](https://iskola.soskut.hu/)
+  - levente@molnarnet.hu
 >Coach
 - Zsolt Molnár
   - zsolt@molnarnet.hu
@@ -38,4 +38,4 @@ Our solution is an autonomous car powered by a Raspberry Pi coded in Python, res
 ### [Vehicle Photos](/v-photos/)
 
 # Special thanks
-Special thanks to Levente Molnár for being an honorary member of our team,József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
+Special thanks to József Gräff for being an honorary member of our team, József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our prototype [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
