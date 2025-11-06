@@ -1,0 +1,11 @@
+﻿Designator,Footprint,Quantity,Value,LCSC Part #
+GYRO1,PinSocket_1x10_P2.54mm_Vertical,1,Conn_01x10_Pin,C57369
+"J1, J2",PinSocket_1x19_P2.54mm_Vertical,2,Conn_01x19_Socket,C2897382
+"J3, J4",PinSocket_1x19_P2.54mm_Vertical,2,Conn_01x19_Pin,C2897382
+J5,PinHeader_1x02_P2.54mm_Vertical,1,PI_PINS,C2905434
+J6,PinHeader_1x02_P2.54mm_Vertical,1,MOT_PINS,C2905434
+J7,PinHeader_1x04_P2.54mm_Vertical,1,ENC_PINS,C2905435
+J8,PinHeader_1x03_P2.54mm_Vertical,1,SERVO_PINS,C2932698
+J9,PinHeader_1x02_P2.54mm_Vertical,1,Conn_01x02_Pin,C2905434
+LIDAR1,PinHeader_1x01_P2.54mm_Vertical,1,Conn_01x01_Pin,C81276
+PSU1,TerminalBlock_Xinya_XY308-2.54-2P_1x02_P2.54mm_Horizontal,1,GND_IN,C5188442

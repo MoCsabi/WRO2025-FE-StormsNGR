@@ -1,0 +1,10 @@
+"Id";"Designator";"Footprint";"Quantity";"Designation";"Supplier and ref";
+1;"PSU1";"TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal";1;"GND_IN";;;
+2;"GYRO1";"PinSocket_1x10_P2.54mm_Vertical";1;"Conn_01x10_Pin";;;
+3;"J8";"PinHeader_1x03_P2.54mm_Horizontal";1;"SERVO_PINS";;;
+4;"J2,J1";"PinSocket_1x19_P2.54mm_Vertical";2;"Conn_01x19_Socket";;;
+5;"J5";"PinHeader_1x02_P2.54mm_Vertical";1;"PI_PINS";;;
+6;"J4,J3";"PinSocket_1x19_P2.54mm_Vertical";2;"Conn_01x19_Pin";;;
+7;"J6";"PinHeader_1x02_P2.54mm_Vertical";1;"MOT_PINS";;;
+8;"J7";"PinHeader_1x04_P2.54mm_Horizontal";1;"ENC_PINS";;;
+9;"LIDAR1";"PinHeader_1x01_P2.54mm_Horizontal";1;"Conn_01x01_Pin";;;

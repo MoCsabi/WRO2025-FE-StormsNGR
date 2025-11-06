@@ -47,7 +47,7 @@ Our robot utilizes ackermann steering geometry and differential drive. We have 3
 ![image showcasing the 3 decks on the robot](decks.png) ![image of the car with connections between components](conn_diagram.png)
 (Sketch that illustrates the connections between the different components of the robot)
 
-For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimize slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect-board which we made with the help of a professional. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is separated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° vertical tilt down. The final size of the robot is 26.8 cm long, 17.9 cm wide and 20.9 cm high. It weighs 1246 grams.
+For steering we used a solution that can be found in many RC cars, we took one from the Ackermann Intelligent Car by HiWonder. After calibrating the geometry to the length of our car we maximalized the steering range to ensure tight turns. We also replaced the steering servo for one with less power consumption and slightly smaller size. For the driving motor we used a 1:10 ratio 12V DC motor and secured it with 90° mounting brackets. The D-shaft of the motor goes inside the custom-designed differential gearbox, where we convert to a lego technic X axle, on which the wheels are mounted. For the rear wheels we used wider Lego wheels to minimize slippage. The front wheels are slimmer so the front of the robot can be thinner which is ideal when dodging obstacles or parking. Due to the many heavy installments, such as the motor and the power supply, the center of gravity is low, which is ideal for track stability and turning.<br> On the middle deck we have the Raspberry Pi and the ESP-32 microcontroller with its pins mounted on a custom interconnect PCB. It helps with the wiring by routing certain pins next to each other and allowing us to use ribbon cables, making everything much cleaner. This deck is separated from heavy-duty equipment like the motor which cause electrical noise that could interfere with the controllers. The LiDAR sensor is also mounted here with a special mounting bracket, ensuring the widest FOV possible. The base of the camera tower is also mounted here.<br>The third deck is much smaller, the main reason we installed it was the lack of space for the remaining components, while also keeping the car small and light. Importantly the Led&Key input and display panel is also installed here for easy access. The camera tower ensures the camera is looking in front of the robot with a 10° vertical tilt down. The final size of the robot is 26.8 cm long, 17.9 cm wide and 20.9 cm high. It weighs 1246 grams.
 
 ## Wiring diagrams
 The colored squares represent the cable colors on the robot.
@@ -55,11 +55,7 @@ The colored squares represent the cable colors on the robot.
 This illustration is most important for the source code, since everything is actually wired through the custom-made board for the ESP.
 ![ESP wiring diagram](pinouts_ESP.jpg)
 (ENC-Motor encoder, PI-Raspberry Pi)
-### Custom-made interconnect panel wiring with connections labeled:
-![Custom-made interconnect panel wiring diagram](pinouts_board.jpg)
-(ENC-Motor encoder)
 
-A CAD model is also available in the [ESP_v8.sch](ESP_v8.sch) file.
 ### Raspberry Pi pinout with connections labeled:
 ![alt text](pinouts_pi.jpg)
 (L&K-Led and Key panel)
@@ -67,6 +63,15 @@ A CAD model is also available in the [ESP_v8.sch](ESP_v8.sch) file.
 ![alt text](pinouts_mc.jpg)
 
 All of these can also be found in the form of an excel spreadsheet in the [pinouts.xlsx](pinouts.xlsx) document.
+
+### Custom interconnect PCB schematic and wiring:
+
+![PCB interconnect schematic](PCB_schematic.png)
+
+![PCB interconnect wiring](PCB_design.png)
+
+The PCB project, along with its BOM can be found in the [schemes/wro_nyak](/schemes/wro-nyak/) subfolder.
+
 ## Power
 A simple explanation of the power supply hierarchy of our robot.
 - Battery `12V`

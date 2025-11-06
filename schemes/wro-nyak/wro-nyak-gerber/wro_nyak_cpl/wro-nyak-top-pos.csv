@@ -1,0 +1,12 @@
+Ref,Val,Package,PosX,PosY,Rot,Side
+"GYRO1","Conn_01x10_Pin","PinSocket_1x10_P2.54mm_Vertical",20.380000,-20.000000,90.000000,top
+"J1","Conn_01x19_Socket","PinSocket_1x19_P2.54mm_Vertical",37.140000,-26.320000,0.000000,top
+"J2","Conn_01x19_Socket","PinSocket_1x19_P2.54mm_Vertical",60.000000,-26.320000,0.000000,top
+"J3","Conn_01x19_Pin","PinSocket_1x19_P2.54mm_Vertical",29.640000,-26.320000,0.000000,top
+"J4","Conn_01x19_Pin","PinSocket_1x19_P2.54mm_Vertical",67.500000,-26.320000,0.000000,top
+"J5","PI_PINS","PinHeader_1x02_P2.54mm_Vertical",22.000000,-53.500000,0.000000,top
+"J6","MOT_PINS","PinHeader_1x02_P2.54mm_Vertical",49.500000,-20.000000,90.000000,top
+"J7","ENC_PINS","PinHeader_1x04_P2.54mm_Horizontal",52.040000,-78.500000,-90.000000,top
+"J8","SERVO_PINS","PinHeader_1x03_P2.54mm_Horizontal",63.040000,-78.500000,-90.000000,top
+"LIDAR1","Conn_01x01_Pin","PinHeader_1x01_P2.54mm_Horizontal",35.000000,-78.500000,-90.000000,top
+"PSU1","GND_IN","TerminalBlock_Phoenix_MPT-0,5-2-2.54_1x02_P2.54mm_Horizontal",25.460000,-80.500000,0.000000,top

@@ -251,11 +251,7 @@ stop
 
 ### Obstacle challenge
 
-<<<<<<< Updated upstream
-In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color of the traffic signs. After the first lap it follows an opimized path. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
-=======
 In the obstacle challenge the robot completes straight sections independently of each other, going around traffic signs and avoiding the parking space. First it parks out, detects the driving direction similar to Open challenge, then in the first lap checks the color and position of the traffic signs. After the first lap it follows an opimized path. Finally after 3 laps it returns to the starting zone with the parking space, after which it parallel parks.
->>>>>>> Stashed changes
 
 Simplification was our main principle when solving the obstacle challenge. First, we broke down the mat into 4 straight **sections** and four turns in the empty corner zones. We also broke down the straight sections into two main lanes, inner lane, which is the 40 cm wide inner space and outer space which is the outer 40 cm wide space. We also have a "middle lane", but that has no precise area, it's used to signal that the robot is neither in the inner nor the outer lane, for example in the start of each straight section after having turned during the first lap. Our goal was to make only a handful of possible driving scenarios on the straight and corner zones.
 
