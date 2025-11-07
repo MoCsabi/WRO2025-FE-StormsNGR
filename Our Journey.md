@@ -4,7 +4,7 @@ The documentation will begin with the journey we went on this year, our struggle
 
 ## Our past
 
-WRO has been quite a significant part of our lives for a few years now. While the competition had come with its fair share of hardships it also gave us some of the most important opportunities in our lives. Last year was our first time experiencing the Future Engineers category and it was a great challenge. We learned a lot and even **managed to secure the title of World Champions,** something we couldn't even dream of achieving before. After such an incredible first experience, we already realized how important this project was for us and eagerly started preparing for this season of WRO.
+WRO has been quite a significant part of our lives for a few years now. While the competition had come with its fair share of hardships it also gave us some of the most important opportunities in our lives. Last year was our first time experiencing tppppphe Future Engineers category and it was a great challenge. We learned a lot and even **managed to secure the title of World Champions,** something we couldn't even dream of achieving before. After such an incredible first experience, we already realized how important this project was for us and eagerly started preparing for this season of WRO.
 
 ![1st place](1st.png)
 
@@ -53,7 +53,7 @@ While the new differential already provided us with a decent speed bump, **we wa
 
 The parking was one of the main rule changes compared to last year. While the increased parking space was really useful, parallel parking still proved to be a lot more difficult than perpendicular parking. We first tried a method of basically wiggling our way out of the parking space, but that added a lot more complexity and was influenced too much by the play in the motor and wheels. To fix this we had to **heavily modify our steering gear,** by moving up the servo and extending its range to the absolute limit. These changes allowed the robot to simple drive out of the parking space with one turn.
 
-![driving mechanism changes](new_diff.png)
+![driving mechanism changes](new_diff2.png)
 
 ### Speeding up the Lidar
 
@@ -66,36 +66,6 @@ We also needed some way to further stabilize the run. An issue that came up some
 ### Predictive gyro
 
 Just like Lidar, we had issues with the refresh rate of the gyro as well, but with turning. However we could use a more robust solution this time, since the gyro on outputs one value and that value cannot have big jumps in it. We decided on using an interpolation method, basically **predicting the gyro values based on previous data,** allowing us to end turns at just the right time.
-
-### Custom interconnect PCB
-
-In order to save some space and ensure proper
-wiring, we designed a custom PCB in [KiCad](https://www.kicad.org/). The PCB is designed to
-house the ESP, and to properly group the various output pins
-we need to connect to the other parts of the system according to the following schematic:
-
-![PCB wiring schematic](schemes/PCB_schematic.png)
-
-Two mounting holes were added to allow us to affix the PCB using 2 M3 screws. In order to save some space, we also added a few redundant pins to the `GYRO1` element. This let us put the IMU right on the top of the PCB.
-
-As a safety precaution and to ensure extensibility, all ESP pins were mirrored to their respective sides. This proved essential, because we failed to notice a critical mistake before ordering the PCB. ENC1 and ENC2 were 1 pin higher (below the +3V3 label), meaning that instead of ENC1 being connected to a programmable GPIO pin, it connected to the EN pin. This meant that, whenever the pin got any power, the enable pin triggered a reset in the ESP. While we lacked the time to order a new PCB before the competition, we could use a jumper connected to one of the pin mirrors to amend this issue. As for the files themselves, all PCB design documents contain a version where this wiring mistake has been fixed.
-
-After all wiring has been laid out, the final PCB layout is as follows:
-
-![PCB wiring layout](schemes/PCB_design.png)
-
-*Note: the red wires are on the top, the blue ones are on the bottom of the PCB, which let us connect everything in a clear, simple matrix layout without collisions*
-
-Some extra rules had to be employed in order to ensure the PCB working properly. First, the GND and +3V3 as well as +5V wires were thickened, since they deliver much more current than everything else. Another big factor was the 5V wiring itself: the ESP could either get its 5 volt power through the built in pin or USB-C port, but not both without that causing issues (for example, it managed to break the USB port of one of our ESP-s). Because of this, a jumper bridge has been added, if the `ESP32 5V SWITCH` pins are not connected, the ESP must be supplied through the USB port, otherwise power delivery is done through the dedicated pin.
-
-This was the final PCB design:
-
-![PCB render](schemes/PCB_render.png)
-
-After every factor mentioned above has been dealt with, a BOM assembled, and the PCB ordered, the PCB was successfully integrated into the car (besides the EN miswiring mentioned above).
-
-The PCB project itself, as well as the BOM we used to order the final pcb can be found in the 
-[schemes/wro_nyak](/schemes/wro-nyak/) subfolder.
 
 ### Troubleshooting
 
@@ -113,7 +83,56 @@ In the development process we also encountered some rather peculiar and informat
 
 When working on the robot we realized a grave mistake we had made last year. **We did not give a name to our robot,** so we needed to change that as soon as possible. Since during testing our robot had a tendency tu bulldoze over things, we decided on naming it Dózer, from the world bulldózer, which just means bulldozer. After coming up with the name we also wanted it to look the part, so we gave it a little shovel upfront and a license plate on the back.
 
-![evolution of our robot](evolution.webp)
+---
+
+## Optimizing and the finishing touches
+
+The changes we made up till this point were made before the national competition as these were the bulk of what we had planned. While not changing the look of the robot that much, these changes were still astronomical when it came to how the robot functions. These changes turned out great, however things like these **still needed a lot of polishing.** So once the national final has ended and we finally got some rest, we sat out once again to finally complete the robot. While there were no more huge changes that needed to be made, there were still things that required small improvements to be perfect. Just like before, we made a list of the things that we had to work on:
+
+### New motor controller
+
+The first change we made was getting a new motor controller. While the previous one worked fine, it was quite big and inefficient, so we decided to get a new one. **The new one solved those issues and even made our robot go a lot quiter.**
+
+### Custom interconnect PCB
+
+In order to save some space and ensure proper
+wiring, we designed a custom PCB in [KiCad](https://www.kicad.org/). We had already made something similar before, but we decided to make a more sophisticated one this time around.
+The PCB is designed to
+house the ESP, and make connencting it to the other systems and parts of the robot a lot simpler and more intuitive.
+
+![PCB render](schemes/PCB_render.png)
+
+Two mounting holes were added to allow us to affix the PCB using 2 M3 screws. In order to save some space, we also added a few redundant pins to the `GYRO1` element. This let us put the IMU right on the top of the PCB.
+
+As a safety precaution and to ensure extensibility, all ESP pins were mirrored to their respective sides. This proved essential, because we failed to notice a critical mistake before ordering the PCB. ENC1 and ENC2 were 1 pin higher (below the +3V3 label), meaning that instead of ENC1 being connected to a programmable GPIO pin, it connected to the EN pin. This meant that, whenever the pin got any power, the enable pin triggered a reset in the ESP. While we lacked the time to order a new PCB before the competition, we could use a jumper connected to one of the pin mirrors to amend this issue. As for the files themselves, all PCB design documents contain a version where this wiring mistake has been fixed.
+
+After every factor mentioned above has been dealt with, a BOM assembled, and the PCB ordered, the PCB was successfully integrated into the car (besides the EN miswiring mentioned above).
+
+
+### Filtering out errors in the raspberry - esp communication system
+
+Communication between the computing units was always a tricky part. There were always a lot of things that could go wrong. While most of the problems we encountered were fixed by this point, there was always a chance that any data we sent could get corrupted by the time it has reached its goal. We eased this problem by **integrating a checksum into our communication system,** which in short checks the sum of the message on both sides and compares them, thus being able to tell if the message was corrupted in any way.
+
+### Optimizing robot path to improve speed
+
+Last year, our main focus was stability, while this year we also decided to focus on speed. While stability is still the most important aspect of the robot, we realized that also needed to shave off from the runtime as much as we could in order to not fall behind in the competition. We already massively improved the speed of the robot, but we knew that we could also gain time by just making it go a shorter distance. Previously this seemed impossible as there were problems with our turning angle, but we managed to **tweak some things in our turning gear, finally making this possible.** Now the robot can optimize its path even more making it that sometimes even one short turn is enough for entire sections of the map.
+
+### Fine-tuning the sensors
+
+The sensors are the eyes of the vehicle, so it was always very important that they worked "well", but that "well" part **could only be called "well enough" up to this point.** To change this we had to implement a few things.
+
+First of all, we found that there was a proportional error in our IMU. Thankfully this was a constant value, so there was a constant difference in every 360 degrees, meaning that it was something that our ESP could handle easily by adjusting for it.
+
+Then we also fixed the problem caused by the misalignment of the lidar and the camera. The solution was to check their angle compared to the straight axis (which is the axis perpendicular to the rear/driving axis of the car) and make a slight correction according to it.
+
+Finally, to make finding problems easier in the future, we also added a few features to our debbuging program, like also implementing the camera images into the playback feature, and adding a menu to create different run presets to streamiline the testing process.
+
+### Improving the wheels
+
+The final thing we did was to change out the wheels. The wheels we were using at that time worked flawlessly, however with the robot being able to go much faster, they had started to slip. We could have just changed them to a bigger wheels with more grip, but that could have posed a problem when parking. Luckily we managed to find a pair of wheels **that fit both criteria of being thin and grippy,** so we started using those instead. After this the only thing left to fix was making them mount better on the front, since there we used screws for mounting, instead of an axle. For this we edited the 3d model of the rim, so that it could have **a nut inserted inside of it.** We did have to make a few versions of this design, since the first one did not turn out so well, but we did end up making a good one. These fixes were the last things we needed to do to complete the robot, and after doing so, the robot ended up working beautifully.
+
+
+![evolution of our robot](evolution2.png)
 
 ---
 
@@ -123,12 +142,7 @@ We usually **met up once a week to work on this project,** but even when we were
 
 ## The future
 
-We made huge improvements over last year, making the robot a lot faster and more reliable, however there are still some things that could be improved upon:
-
-* Getting a faster servo, to make turning even more accurate.
-* Optimizing the size of the robot.
-* Changing the motor controller to a more modern one with higher efficiency.
-* Optimizing our strategy and developer tools even further.
+We made huge improvements over last year, making the robot a lot faster and more reliable, making us very hopeful for this year's competition. While this is as good as the robot has ever been, we will always find new things to improve on. But for us to know what we truly need to change, **we first need to wait until we can learn about the next year's challenge,** until then, we can only keep planning.
 
 ## Conclusion
 

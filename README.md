@@ -10,8 +10,8 @@ We are the StormsNGR team from Hungary, and we are competing in the 2025 WRO Fut
 - **Levente Molnár** from [Sóskút Károly Andreetti elementary school](https://iskola.soskut.hu/)
   - levente@molnarnet.hu
 >Coach
-- Zsolt Molnár
-  - zsolt@molnarnet.hu
+- József Balázs Gräff
+  - graffjozsefb@gmail.com
 
 Links to our socials:
 
@@ -38,4 +38,4 @@ Our solution is an autonomous car powered by a Raspberry Pi coded in Python, res
 ### [Vehicle Photos](/v-photos/)
 
 # Special thanks
-Special thanks to József Gräff for being an honorary member of our team, József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our prototype [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
+Special thanks to Zsolt Molnár for all the mentoring he's done for us, József Molnár from the [Budapest University of Technology and Economics](https://www.bme.hu/) Faculty of Mechanical Engineering for helping us with the preparations, György Fenyvesi for helping us develop our prototype [custom made interconnect panel](/schemes/README.md/#custom-made-interconnect-panel-wiring-with-connections-labeled), József Gräff, our coach Zsolt Molnár and a bunch of others for helping us by reviewing all the documentation. And of course, to both our families for tolerating us taking up the entire living room with the robot mat 🙂.
