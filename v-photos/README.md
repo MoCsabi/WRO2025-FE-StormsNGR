@@ -1,4 +1,4 @@
 Vehicle's photos
 ====
 
-This directory contains 6 photos, one from each direction and 1 extra, showcasing the 3 decks of the robot.
+This directory contains the required 6 photos of the robot from the 6 directions, 3 photos of the decks of the robot and 7 extra interesting photos or close-ups.
