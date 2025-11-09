@@ -1,9 +1,6 @@
-
 # Open challenge
->Turn on closed captions for the full experience!
 
-https://youtu.be/ehH_5YLYRvY
+https://youtu.be/j-R4YJBcox0
 # Obstacle challenge
->Turn on closed captions for the full experience!
 
-https://youtu.be/myBVCb_StHU
+https://youtu.be/jDH46Z8AefU

@@ -197,8 +197,8 @@ Switches lanes to `newLane`, which can be the constant `LANE_LEFT` or `LANE_RIGH
 `correctWallDist(walldirection, targetDistance)`
 Works similarly to `setLane` but moves at a very limited angle (10°) so arcing straight at the end won't affect the distance from the wall, enabling extra precise positioning. Designed for when the robot has to move straight for an entire section, so it has a lot of space for precise movements.
 
-`turnCorner()`<br>
-Turns the corner at the and of a section. It can turn two ways depending on the current lane of the robot on the end of the section (inner lane or outer lane).
+`turnCorner(targetLane)`<br>
+Turns the corner at the and of a section. Default targetLane is `DETECTION`, which signals the robot hasn't yet detected all obstacles. In this case the robot turns so it ends up in between the two lanes. If targetLane is set the robot performs an optimized one-arc turn into the correct lane.
 
 ## Robot run strategy
 
@@ -279,6 +279,19 @@ After each turn we set an angle offset variable, same way as in Open Challenge, 
 
 After completing the first lap we no longer have to detect the color of the obstacles, which leaves the door open for further optimizations.
 
+Pseudo code of the detection laps:
+```python
+repeat 4 times:
+  #at the end of a straight section, before turncorner
+  turnCorner(DETECTION)
+  if(obstacles are detected in first or second row):
+    detectObjectColor and store object position
+  switchlane according to detected objectColor
+  if(obstacle in third row detected) #now close enough to detect color if needed
+    detectObjectColor and store object position
+  switchlane according to detected objectColor
+```
+
 #### Optmized laps
 
 After all obstacles have been detected, the robot follows a much more optimized path. During the staright sections it's movement is still constained to the two lanes, but turning around at the corner is where most we were able to cut down on lap times.
@@ -297,6 +310,18 @@ Here's what an optimized lap might look like:
 ![Optimized lap](optimized_lap.png)
 
 With these optimizations we were able to shave down about 70 seconds from our run time, without secrificing simplicity or reliability.
+
+Pseudo-code of the optimzed laps:
+
+```python
+repeat 4*2 times:
+  #at the end of a straight section, before turncorner
+  turncorner(according to the color of the first traffic sign in the next section)
+  if(there are two traffic signs in this section and they are of different color):
+    switchlane
+  else:
+    correcttWallDist
+```
 
 #### Parking
 
