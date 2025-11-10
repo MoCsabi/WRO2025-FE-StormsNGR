@@ -71,7 +71,7 @@ Just like Lidar, we had issues with the refresh rate of the gyro as well, but wi
 
 In the development process we also encountered some rather peculiar and informative issues. Those are listed below:
 
-* We noticed some issues with the Lidar. First of all we noticed seemingly random 0 values appearing in our logs, that disappeared for some reason when wo covered the robot with a box. Turns out when the light from the Lidar bounces away into world and does not return or goes further than 12 meters, the Lidar will say the distance was 0. Thankfully we could ignore those values. Another problem was the dead zone of the Lidar changing, but we could solve that by implementing dead zone management into our code.
+* We noticed some issues with the Lidar. First of all we noticed seemingly random 0 values appearing in our logs, that disappeared for some reason when we covered the robot with a box. Turns out when the light from the Lidar bounces away into world and does not return or goes further than 12 meters, the Lidar will say the distance was 0. Thankfully we could ignore those values. Another problem was the dead zone of the Lidar changing, but we could solve that by implementing dead zone management into our code.
 
 * A problem with our motor also arose, when it started moving in an uneven throbbing fashion, that disappeared when we stopped controlling it. This was most likely caused by electromagnetic interference from one of the cables near the motor. After moving the cables, the problem disappeared.
 
@@ -81,7 +81,7 @@ In the development process we also encountered some rather peculiar and informat
 
 ### Aesthetic changes
 
-When working on the robot we realized a grave mistake we had made last year. **We did not give a name to our robot,** so we needed to change that as soon as possible. Since during testing our robot had a tendency tu bulldoze over things, we decided on naming it Dózer, from the world bulldózer, which just means bulldozer. After coming up with the name we also wanted it to look the part, so we gave it a little shovel upfront and a license plate on the back.
+When working on the robot we realized a grave mistake we had made last year. **We did not give a name to our robot,** so we needed to change that as soon as possible. Since during testing our robot had a tendency tu bulldoze over things, we decided on naming it Dózer, from the word bulldózer, which just means bulldozer. After coming up with the name we also wanted it to look the part, so we gave it a little shovel upfront and a license plate on the back.
 
 ---
 

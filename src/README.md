@@ -22,7 +22,7 @@ The different communication protocols used between the components of the robot a
     - LiDAR (receive) `UART` **custom protocol implementation**
     - Led&Key panel `Data, Strobe, Clock` **TMBoard library**
     - Buzzer `Digital`
-    - Camera `FPC Camera Cable` **picamera library**
+    - Camera `FFC` **picamera library**
 
 Communication between the Raspberry Pi and the computer is handled by our custom-made Visual Studio Code extension, RpiCode. It creates the SSH connection over WiFi or Ethernet and enables us to upload or download files and even view live sensor data. More information about the extension can be found in the [RpiCode documentation](/other/RpiCode/README.md).
 
@@ -40,9 +40,9 @@ Another case where we had to create our own communication solution was between t
 | Is the ESP synced with the Pi | IMU heading angle | -EMPTY- since we have no left motor, legacy value | Right motor encoder position | Speed of the motors in encoder ticks/second | Velocity Mode, describes the current state of the motors such as forward, braking or unregulated | Steering mode, can be IMU-controlled, arcing or free | Log variable, used for debugging | checkSum value |
 
 ### Checksum
-In every packet a checksum value is included. This is calculated by taking the modulus of every field with 256, adding them together, taking the modulud with 256 again and finally adding one. Here's what it looks like in practice:
+In every packet a checksum value is included. This is calculated by taking the modulus of every field with 256, adding them together, taking the modulus of the sum +1 with 256 again. Here's what it looks like in practice:
 ```python
-((isSynced % 256) + (heading % 256) + ... + (logVar % 256) % 256) + 1
+(1+ (isSynced % 256) + (heading % 256) + ... + (logVar % 256) % 256)
 ```
 This value is also calculated by the Raspberry Pi, and if the sent value doesn't match the packet is invalidated. The extra 1 is added so a stream of 0-s isn't a valid packet. The purpose of this checksum field is to help detect and fix communications problems with a helpful side-effect of possibly saving a run, it is not the fix itself.
 
@@ -147,7 +147,7 @@ Returns the distance measured by the LiDAR sensor at `angle` using the last stor
 ![illustration showing phantom distances](phantom-distance.png)
 The area between the gray lines is the zone where the LiDAR is blocked, the dotted red line is where we want to measure (perpendicular to the wall) and the solid red line is the first non-deadzone angle where we can measure distance. Alpha is the difference between the measuring angle and the requested angle. By imagining the right triangle defined by $\alpha$, measured distance and phantom distance we can calculate the unknown length of phantom distance:
 
-$$\text{phantom\_distance}=\cos(\alpha)\cdot \text{measured\_distance}$$
+$$\text{phantomdistance}=\cos(\alpha)\cdot \text{measureddistance}$$
 
 `readAbsLidar(angle)`<br>
 Same as `readLidar` except it uses the IMU angle to calculate in absolute angles (the front wall is 0°, the wall to the right is 90° and so on).

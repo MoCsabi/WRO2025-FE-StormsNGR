@@ -15,7 +15,7 @@ We installed a lot of sensors and other components on the car, here is a list of
   - Operating voltage 5V, 2*19 pins, dimensions: 49.5 x 26 mm
 - **Custom interconnect board**
   - ESP pins insert into this, PCB that groups common pins near each other, helps with wiring
-- Inertial Measurement Unit (**IMU**) [BNO085](https://www.hestore.hu/prod_10044901.html)
+- Inertial Measurement Unit (**IMU**/**Gyro**) [BNO085](https://www.hestore.hu/prod_10044901.html)
   - Operating voltage 3.3V, drift 0.5°/min, dynamic rotation error 4.5°
 - **Motor driver** [L298N-MOD](https://www.hestore.hu/prod_10036621.html)
   - Output 2*5A max
@@ -54,7 +54,7 @@ The colored squares represent the cable colors on the robot.
 ### ESP microcontroller (NodeMCU) pinout with connections labeled:
 This illustration is most important for the source code, since everything is actually wired through the custom-made board for the ESP.
 ![ESP wiring diagram](pinouts_ESP.jpg)
-(ENC-Motor encoder, PI-Raspberry Pi)
+(ENC-Motor encoder, PI-Raspberry Pi, D: directly connected, !: not wired through the interconnect panel)
 
 ### Raspberry Pi pinout with connections labeled:
 ![alt text](pinouts_pi.jpg)
@@ -79,7 +79,7 @@ A simple explanation of the power supply hierarchy of our robot.
     - Steering servo `5V`
     - Raspberry Pi 5 `5V` (from USB-C, can supply `3.3V`)
       - LiDAR `5V`, **180mA**
-      - Camera `5V` **200mA** (FPC)
+      - Camera `5V` **200mA** (FFC)
       - Led&Key Panel `3.3V`
     - NodeMCU-32S `5V` (from Vin pin, can supply `3.3V`)
       - Inertial Measurement Unit `3.3V`
@@ -95,12 +95,12 @@ The different connections used between the components of the robot and their hie
     - ESP `UART` Pi: **USB-TTL** - ESP: **RXD-GPIO-25, TXD-GPIO-26**
       - IMU `UART-RVC` **(SDA-GPIO 17)**
       - Motor encoder `Digital` **(A-GPIO 34, B-GPIO 35)**
-      - Motor driver `PWM` 2x`Digital` **(ENA-GPIO 12, ENB-GPIO 14, PWM-GPIO 21)**
+      - Motor driver 2x`PWM` **(PWM_1-GPIO 13, PWM_2-GPIO 16)**
       - Servo `PWM` **(Signal-GPIO 27)**
     - LiDAR `UART` **(TX-GPIO 15)** 
     - Led&Key panel `Data, Strobe, Clock` **(DIO-GPIO 19, STB-GPIO 16, CLK-GPIO 13)**
     - Buzzer `Digital` **(+-GPIO 5)**
-    - Camera `USB`
+    - Camera `FFC`
 
 The actual communication between the components is detailed in the [software documentation](/src/README.md#sensors-and-motors).
 ## Drive
