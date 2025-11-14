@@ -68,7 +68,11 @@ All of these can also be found in the form of an excel spreadsheet in the [pinou
 
 ![PCB pinout](pinouts_board.jpg)
 
+*Note: the red wires are on the top, the blue ones are on the bottom of the PCB, which let us connect everything in a clear, simple matrix layout without collisions*
+
 ![PCB interconnect wiring](PCB_schematic.png)
+
+Some extra rules had to be employed in order to ensure the PCB working properly. First, the GND and +3V3 as well as +5V wires were thickened, since they deliver much more current than everything else. Another big factor was the 5V wiring itself: the ESP could either get its 5 volt power through the built in pin or USB-C port, but not both without that causing issues (for example, it managed to break the USB port of two of our ESP-s). Because of this, a jumper bridge has been added, if the `ESP32 5V SWITCH` pins are not connected, the ESP must be supplied through the USB port, otherwise power delivery is done through the dedicated pin.
 
 The PCB project, along with its BOM can be found in the [schemes/wro_nyak](/schemes/wro-nyak/) subfolder.
 
@@ -274,6 +278,18 @@ Designing and printing out different parts of the robot was one of our biggest t
   In our robot the differential was on the right side, one of the axles needed to be exceptionally long which would enlarge any potential bending. To counter this we made a securing device which is basically just a box with a bearing in it. Just like the frame, **this was also split in two,** but since this part is completely symmetrical, it only requires one model.
 
   ![axle holder](holder.png)
+
+
+### The new wheel
+
+As mentioned before, to save parking space, we decided to switch to thinner wheels, but that caused problems on the front, when mounting. To fix this, we found an STL file of the rims we used online and modified it. We only made two small adjustments.
+
+![new rim](wheel_nut.png)
+
+>- **We filled the axle hole in the middle of the wheel and inserted a circular hole that an M4 screw can fit through.**
+>- **Addded a hexagonal indent to the outside which can fit an M4 nut.**
+
+These changes made the mounting of the front wheels a lot more secure, and also made them take a more straight path on the road, whereas before, there was a slight wobble when going straight.
 
 
 ### Aesthetic pieces
