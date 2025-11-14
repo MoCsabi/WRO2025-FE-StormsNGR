@@ -246,7 +246,7 @@ Designing and printing out different parts of the robot was one of our biggest t
 
 
 ### The differential gear frame
-  With a new differential we also required a new frame for said differential. The frame is what holds differential in the air so that it doesn't touch anything, and **has embedded bearings to reduce the friction** between the frame and the axles. We used bearing last year as well but this year we made a few improvements in that area.
+  With a new differential we also required a new frame for said differential. The frame is what holds differential in the air so that it doesn't touch anything, and **has embedded bearings to reduce the friction** between the frame and the axles. We used bearings last year as well but this year we made a few improvements in that area.
 
   >- **Made the slots larger that can accompany larger bearings that provide more support and enables the usage of fitting rings on the axles.**
   >- **Split the model into two and added walls for the slots to make the bearings and the fitting rings unable to move.**
@@ -289,7 +289,7 @@ As mentioned before, to save parking space, we decided to switch to thinner whee
 >- **We filled the axle hole in the middle of the wheel and inserted a circular hole that an M4 screw can fit through.**
 >- **Addded a hexagonal indent to the outside which can fit an M4 nut.**
 
-These changes made the mounting of the front wheels a lot more secure, and also made them take a more straight path on the road, whereas before, there was a slight wobble when going straight.
+Applying these adjustments made the mounting of the front wheels a lot more secure, and also made them take a more straight path on the road, whereas before, there was a slight wobble when going straight.
 
 
 ### Aesthetic pieces
