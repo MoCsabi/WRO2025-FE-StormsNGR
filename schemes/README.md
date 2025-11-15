@@ -77,6 +77,12 @@ Some extra rules had to be employed in order to ensure the PCB working properly.
 The PCB project, along with its BOM can be found in the [schemes/wro_nyak](/schemes/wro-nyak/) subfolder.
 
 ## Power
+The robot's power supply is provided by a central accumulator (battery).
+We considered powering the motors and the control system from separate power sources due to their differing requirements and to limit the electrical interference (noise), but ultimately decided on a common power source for simplicity. The 11.1 V, 6000 mAh lithium accumulator provides more than sufficient capacity for us. A lower capacity device would have also sufficed and while being lighter, but the ability to avoid constant recharging is a great advantage for us during the testing periods. For safety, the accumulator is easily removable via a detachable cable. We have a spare unit, enabling us to charge one while using the other. The accumulator connects directly to the main switch via the detachable cable.
+The battery's largest consumer is the drive motor. The DC motor connects to the motor driver without voltage conversion. The driver's maximum current is 3.6A, which is sufficient for the motor's maximum current draw of 3.2A. The motor driver includes essential integrated protections (Overcurrent Protection - OCP, Thermal Shutdown - TSD).
+The remaining components of the system operate at 5V, which we provide using a step-down power supply. A very useful feature of this power supply is that it displays the input voltage, allowing us to monitor the battery's state of charge. Among the 5V components, the Servo and the Raspberry Pi require significant current, which is handled by the power supply's 5A maximum current output.
+A few of the robot's components, mainly sensors, operate at a 3.3V voltage level, but their power supply is provided by the controller (ESP/Pi) they are connected to.
+
 A simple explanation of the power supply hierarchy of our robot.
 - Battery `12V`
   - Step-down module `12V-->5V`
@@ -85,11 +91,11 @@ A simple explanation of the power supply hierarchy of our robot.
       - LiDAR `5V`, **180mA**
       - Camera `5V` **200mA** (FFC)
       - Led&Key Panel `3.3V`
-    - NodeMCU-32S `5V` (from Vin pin, can supply `3.3V`)
+    - NodeMCU-32S `5V` (from **Vin** pin, can supply `3.3V`)
       - Inertial Measurement Unit `3.3V`
       - Motor encoder `3.3V`
   - Motor driver `12V`
-    - DC motor `12V` **~1A**
+    - DC motor `12V` **~1A**, max 3.2A
 
 
 ## Connections
