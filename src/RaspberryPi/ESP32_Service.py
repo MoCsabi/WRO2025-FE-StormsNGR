@@ -4,10 +4,12 @@ from time import sleep
 import time
 
 import serial
-from Buzzer import beep_parallel
 import SerialCommunicationService
 from log import *
+from Buzzer import *
 
+
+# from copy import deepcopy
 CMD_STEER=6
 CMD_SYNC=17
 CMD_HEARTBEAT=7
@@ -30,6 +32,8 @@ CMD_SET_ARCDIR=32
 CMD_SET_GYRO_LATENCY_MILLIS=33
 CMD_SET_SGYRO_LIMITS=34
 CMD_SET_SPCTRL_I=35
+CMD_SET_GYROERROR=36
+CMD_SET_ARCCANCEL=37
 
 # CMD_DATA_POSL=11
 # CMD_DATA_POSR=12
@@ -75,7 +79,7 @@ ESP32LOCK=threading.Lock()
 class STATE(Enum):
     HEADER=0, #Looking for packet header
     DATA=1 #Looking for data bytes
-PACKET_LENGTH=23
+PACKET_LENGTH=27
 packetBuffer=[]
 serialState=STATE.HEADER
 headerLetters=0
@@ -116,23 +120,57 @@ def sendInt(data:int,data_length:int=3):
     b=bytearray(data.to_bytes(data_length,'little',signed=True))
     SerialCommunicationService.ESPserial.write(b)
 packetCount=0
-def processPacket(bytes:list):
+def processPacket(bytes:list)->bool:
     global isSynced, heading, encoderLeft, encoderRight, vMode, speed, sMode, logVar, packetCount
     packetCount+=1
+    #old_bytes=deepcopy(bytes)
+    checkSum=1
+    isSynced_t=readInt(1,bytes)
+    checkSum+=(isSynced_t%256)
+    heading_t=readInt(4,bytes)
+    checkSum+=(heading_t%256)
+    encoderLeft_t=readInt(4,bytes)
+    checkSum+=(encoderLeft_t%256)
+    encoderRight_t=readInt(4,bytes)
+    checkSum+=(encoderRight_t%256)
+    vMode_t=readInt(1,bytes)
+    checkSum+=(vMode_t%256)
+    sMode_t=readInt(1,bytes)
+    checkSum+=(sMode_t%256)
+    speed_t=readInt(4,bytes)
+    checkSum+=(speed_t%256)
+    logVar_t=readInt(4,bytes)
+    checkSum+=(logVar_t%256)
     
-    isSynced=readInt(1,bytes)
-    heading=readInt(4,bytes)
-    encoderLeft=readInt(4,bytes)
-    encoderRight=readInt(4,bytes)
-    vMode=readInt(1,bytes)
-    sMode=readInt(1,bytes)
-    speed=readInt(4,bytes)
-    logVar=readInt(4,bytes)
+    checkSum%=256
+    checkSum_t=(readInt(4,bytes)+256)%256
+    if checkSum_t==checkSum:
+        isSynced=isSynced_t
+        heading=heading_t
+        encoderLeft=encoderLeft_t
+        encoderRight=encoderRight_t
+        vMode=vMode_t
+        
+        if sMode!=sMode_t:  log.debug("smode changed from %s to %s"%(sMode,sMode_t))
+        if isSynced!=2:
+            log.warn(isSynced)
+            # beep_parallel()
+            # log.error("not in sync%s"%old_bytes)
+            log.error("ESP not in sync2! logvar %s"%logVar)
+        if abs(sMode)>2:    log.error("weird sMode! packet: %s %s %s %s %s %s %s %s"%(isSynced,heading, encoderLeft, encoderRight, vMode, sMode_t, sMode, logVar_t))
+        sMode=sMode_t
+        speed=speed_t
+        logVar=logVar_t
+        return True
+    else:
+        log.error("INCORRECT CHECKSUM! calculated %s received %s"%(checkSum,checkSum_t))
+        log.warn("packet: %s %s %s %s %s %s %s %s"%(isSynced_t,heading_t,encoderLeft_t,encoderRight_t,vMode_t,sMode_t,speed_t,logVar_t))
+        beep_long_parallel()
+        return False
+    
     # log.debug("esp packet speed %s enc1 %s"%(speed,encoderRight))
     # log.debug("received packet %s %s"%(logVar,time.time()))
-    if isSynced!=2:
-        log.warn(isSynced)
-        log.error("ESP not in sync!")
+    
 def sendCommand(command:int, param=None):
     ESP32LOCK.acquire()
     sendInt(command,1)
@@ -193,3 +231,8 @@ def setGyroLatencyMillis(millis):
     sendCommand(CMD_SET_GYRO_LATENCY_MILLIS,millis)
 def setSGyroLimits(limit):
     sendCommand(CMD_SET_SGYRO_LIMITS,int(limit))
+def setGyroError(error):
+    sendCommand(CMD_SET_GYROERROR, int(error))
+    log.debug("ge: %s"%error)
+def setArccancel():
+    sendCommand(CMD_SET_ARCCANCEL, int(1))

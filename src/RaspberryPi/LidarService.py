@@ -7,6 +7,7 @@ import serial
 newLidarDataFlag=False
 onLidarRev=None
 onLoop=None
+LIDAR_ANGLE_OFFSET=2 #how many degrees the lidar is offset from the "straight" direction (defined by the physical robot, + : to the right, - : to the left, not accounting for it being upside down)
 DISTANCE_MAP:list[float]=[-1]*360
 INTENSITY_MAP:list[int]=[0]*360
 

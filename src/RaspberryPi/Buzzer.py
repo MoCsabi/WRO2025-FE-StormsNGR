@@ -23,6 +23,10 @@ def beep_twice():
     GPIO.output(BUZZ_PIN,GPIO.HIGH)
     sleep(0.4)
     GPIO.output(BUZZ_PIN,GPIO.LOW)
+def beep_long():
+    GPIO.output(BUZZ_PIN,GPIO.HIGH)
+    sleep(0.85)
+    GPIO.output(BUZZ_PIN,GPIO.LOW)
 def beep_parallel():
     b_t=threading.Thread(target=beep)
     b_t.start()
@@ -31,6 +35,9 @@ def beep_twice_parallel():
     b_t.start()
 def beep_short_parallel():
     b_t=threading.Thread(target=beep_short)
+    b_t.start()
+def beep_long_parallel():
+    b_t=threading.Thread(target=beep_long)
     b_t.start()
 def beepPWM(hz):
     pwm.ChangeFrequence(hz)

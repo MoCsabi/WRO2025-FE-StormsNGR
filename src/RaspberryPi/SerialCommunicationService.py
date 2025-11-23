@@ -9,6 +9,7 @@ import LidarService
 from log import log
 
 accelFunc=None
+
 lidarSerial = serial.Serial(
     port="/dev/ttyAMA0", baudrate=230400, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE, parity="N",
 )
@@ -33,7 +34,7 @@ def readData(): #Runs constantly, checks for new data and calls the correct proc
         if lidarSerial.in_waiting>0:
             LidarService.processByte((lidarSerial.read()[0]))
         if ESPserial.in_waiting>0:
-            ESP32_Service.processByte(ESPserial.read()[0]) 
+            ESP32_Service.processByte(ESPserial.read()[0])
         if time()-t0>0.1:
             ESP32_Service.beat()
             t0=time()

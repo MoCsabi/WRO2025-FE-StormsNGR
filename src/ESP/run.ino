@@ -5,11 +5,11 @@
 #define B_PIN_L 36 //Left motor encoder A pin
 #define A_PIN_L 39 //Left motor encoder B pin
 // #define PWM_PIN_L 21 //Left motor PWM pin (speed control)
-#define BACKWARD_PIN 14 //Backward pin (set to HIGH to drive motors backward)
-#define FORWARD_PIN 12 //Forward pin (set to HIGH to drive motors forward)
+#define PWM_BW_PIN 16 //Backward PWM pin
+#define PWM_FW_PIN 13 //Forward PWM pin
 #define A_PIN_R 35 //Right motor encoder A pin
 #define B_PIN_R 34 //Right motor encoder B pin
-#define PWM_PIN_R 16 //Right motor PWM pin (speed control)
+// #define PWM_PIN_R 16 //Right motor PWM pin (speed control)
 #define LED_PIN 2 //Built-in Led on the ESP
 #define S_PWM_PIN 27 //Servo PWM pin (turning)
 #define SRL_TX_PIN 25 //Serial communication TX pin (with raspberry)
@@ -24,7 +24,7 @@
 #define spwm_freq 50 //servo PWM frequency
 #define spwm_res 12 //servo PWM resolution (2^12)
 // #define spwm_channel 0 //servo PWM channel
-#define motor_pwm_freq 50 //motor PWM frequency
+#define motor_pwm_freq 19000 //motor PWM frequency
 
 #define motor_pwm_res 12 //motor PWM resolution (2^12)
 
@@ -59,6 +59,8 @@
 #define CMD_SET_GYRO_L_MILLIS 33 //set arc prediction millis
 #define CMD_SET_SGYRO_LIMITS 34 //set smode gyro limits
 #define CMD_SET_SPCTRL_I 35 //set speedcontrol i parameter
+#define CMD_SET_GYROERROR 36 //set gyro error compensation value
+#define CMD_SET_ARCCANCEL 37 //force stop arc
 
 #define CMD_DATA_POSL 11 //retrieve left motor position command
 #define CMD_DATA_POSR 12 // retieve right motor position command
@@ -135,6 +137,7 @@ volatile int isArcing=false;
 volatile int arcT0=-1;
 volatile int arcSpeed=-1;
 volatile int gyroLatencyMillis=7;
+volatile bool arcCancel=false;
 
 //steering PID variables
 volatile int integralY=0;
@@ -150,8 +153,12 @@ volatile int handbrakeIntegral=0;
 int lastYaw=0;
 int yawOffset=0;
 int newYaw=0;
+int lastAbsYaw=0;
+//Error /360°
+int gyroError=14;
 volatile int absYaw=0;
 volatile int targetYaw=0;
+
 volatile int arcDirection=-1; //-1:left, 1:right
 #define ARC_RIGHT 1
 #define ARC_LEFT -1
@@ -166,16 +173,16 @@ volatile int turnRatioR=1000;
 int steerPercentage=0;
 
 Adafruit_BNO08x_RVC rvc = Adafruit_BNO08x_RVC(); //gyro communication class in RVC mode
-void setDrivingDirection(int dir){
-  if(dir==1){
-    digitalWrite(BACKWARD_PIN, LOW);
-    digitalWrite(FORWARD_PIN, HIGH);
-  } else{
-    digitalWrite(BACKWARD_PIN, HIGH);
-    digitalWrite(FORWARD_PIN, LOW);
-  }
+// void setDrivingDirection(int dir){
+//   if(dir==1){
+//     digitalWrite(PWM_BW_PIN, LOW);
+//     digitalWrite(PWM_FW_PIN, HIGH);
+//   } else{
+//     digitalWrite(PWM_BW_PIN, HIGH);
+//     digitalWrite(PWM_FW_PIN, LOW);
+//   }
   
-}
+// }
 //Ultrasonic sensor distance calculating (on echo interrupt)
 void echo(){
   if(usSent){
@@ -256,22 +263,19 @@ void IRAM_ATTR onTick(){
       // Serial.println("pyawe:");
       // Serial.println(predictedYaw);
       // Serial.println("smode "+sMode+" targetyaw "+targetYaw+" arcdir "+arcDirection+" predictedyaw "+predictedYaw);
-      if(((arcDirection==ARC_RIGHT && predictedYaw>=targetYaw) || (arcDirection==ARC_LEFT && predictedYaw<=targetYaw)) && isArcing){
+      if((((arcDirection==ARC_RIGHT && predictedYaw>=targetYaw) || (arcDirection==ARC_LEFT && predictedYaw<=targetYaw)) && isArcing)){
         isArcing=false;
-        Serial.println("reached");
-        Serial.println(arcDirection);
-        Serial.println(predictedYaw);
-        Serial.println(targetYaw);
-        Serial.println(arcSpeed);
-        Serial.println(absYaw);
         steer(0);
         arcT0=millis();
         // setLedStatus(STATUS_CONNECTED);
       }
+
       if(millis()>=arcT0+gyroLatencyMillis && !isArcing) {
-        Serial.println("snone");
-        Serial.println(arcT0);
-        Serial.println(gyroLatencyMillis);
+        sMode=S_GYRO;
+      }
+      if(arcCancel) {
+        arcCancel=false;
+        isArcing=false;
         sMode=S_GYRO;
       }
       break;
@@ -281,19 +285,22 @@ void IRAM_ATTR onTick(){
     case V_UNREGULATED:
     {
       if(unregPower>0){
-        setDrivingDirection(1);
+        ledcWrite(PWM_BW_PIN, 0);
+        ledcWrite(PWM_FW_PIN, int(4095/100*abs(unregPower)));
       } else{
-        setDrivingDirection(-1);
+        ledcWrite(PWM_FW_PIN, 0);
+        ledcWrite(PWM_BW_PIN, int(4095/100*abs(unregPower)));
       }
       // ledcWrite(PWM_PIN_R, 1000);
       // ledcWrite(PWM_PIN_L, 1000);
-      ledcWrite(PWM_PIN_R, int(4095/100*abs(unregPower)));
+      // ledcWrite(PWM_PIN_R, int(4095/100*abs(unregPower)));
       break;
     }
     case V_STOP:
     {
       // ledcWrite(PWM_PIN_L, 0);
-      ledcWrite(PWM_PIN_R, 0);
+      ledcWrite(PWM_BW_PIN, 0);
+      ledcWrite(PWM_BW_PIN, 0);
       break;
     }
     case V_FORWARD:
@@ -310,12 +317,14 @@ void IRAM_ATTR onTick(){
       PWM=std::min(4095,PWM);
       
       if(PWM<0){
-        setDrivingDirection(-1);
+        ledcWrite(PWM_FW_PIN, 0);
+        ledcWrite(PWM_BW_PIN, abs(PWM));
       } else{
-        setDrivingDirection(1);
+        ledcWrite(PWM_BW_PIN, 0);
+        ledcWrite(PWM_FW_PIN, abs(PWM));
       }
       // ledcWrite(PWM_PIN_L, abs(PWM));
-      ledcWrite(PWM_PIN_R, abs(PWM));
+      // ledcWrite(PWM_PIN_R, abs(PWM));
       // ledcWrite(PWM_PIN_L, 1000);
       // ledcWrite(PWM_PIN_R, 1000);
       break;
@@ -331,12 +340,14 @@ void IRAM_ATTR onTick(){
       PWM=std::max(-4095/10,PWM);
       PWM=std::min(4095,PWM);
       if(PWM<0){
-        setDrivingDirection(1);
+        ledcWrite(PWM_BW_PIN, 0);
+        ledcWrite(PWM_FW_PIN, abs(PWM));
       } else{
-        setDrivingDirection(-1);
+        ledcWrite(PWM_FW_PIN, 0);
+        ledcWrite(PWM_BW_PIN, abs(PWM));
       }
       // ledcWrite(PWM_PIN_L, abs(PWM));
-      ledcWrite(PWM_PIN_R, abs(PWM));
+      // ledcWrite(PWM_PIN_R, abs(PWM));
       break;
     }
     case V_BRAKE:
@@ -344,39 +355,45 @@ void IRAM_ATTR onTick(){
       if(abs(speed)<100){
         handbrakePos0=posR;
         handbrakeI=0;
-        vMode=V_HANDBRAKE;
+        vMode=V_STOP;
         break;
       }
-      if(speed<0){
-        digitalWrite(BACKWARD_PIN, LOW);
-        digitalWrite(FORWARD_PIN, HIGH);
-        
-      } else {
-        digitalWrite(BACKWARD_PIN, HIGH);
-        digitalWrite(FORWARD_PIN, LOW);
-      }
       int brake=brakePowerPercent*pow(2,motor_pwm_res)/100;
-      // ledcWrite(PWM_PIN_L, brake);
-      ledcWrite(PWM_PIN_R, brake);
+      if(speed<0){
+        ledcWrite(PWM_BW_PIN, 0);
+        ledcWrite(PWM_FW_PIN, std::min(brake,4095));
+      } else {
+        ledcWrite(PWM_BW_PIN, std::min(brake,4095));
+        ledcWrite(PWM_FW_PIN, 0);
+
+      }
+      
+      // ledcWrite(PWM_PIN_R, brake);
       break;
     }
     case V_HANDBRAKE:
     {
-      int PWM=0;
-      int error=posR-handbrakePos0;
-      handbrakeIntegral+=error;
-      if(abs(error)>10){
-        PWM=error*handbrakeP+handbrakeIntegral*handbrakeI;
-        if(PWM<0){
-          setDrivingDirection(1);
-        } else {
-          setDrivingDirection(-1);
-        } 
-      } else{
-        PWM=0;
-      }
+      ledcWrite(PWM_BW_PIN, 4095);
+      ledcWrite(PWM_FW_PIN, 4095);
+      // int PWM=0;
+      // int error=posR-handbrakePos0;
+      // handbrakeIntegral+=error;
+      // if(abs(error)>10){
+      //   PWM=error*handbrakeP+handbrakeIntegral*handbrakeI;
+      //   if(PWM<0){
+      //     ledcWrite(PWM_BW_PIN, 0);
+      //     ledcWrite(PWM_FW_PIN, std::min(4095,abs(PWM)));
+      //   } else {
+      //     ledcWrite(PWM_FW_PIN, 0);
+      //     ledcWrite(PWM_BW_PIN, std::min(4095,abs(PWM)));
+      //   } 
+      // } else{
+      //   ledcWrite(PWM_BW_PIN, 0);
+      //   ledcWrite(PWM_FW_PIN, 0);
+      //   PWM=0;
+      // }
       // ledcWrite(PWM_PIN_L, std::min(4095,abs(PWM)));
-      ledcWrite(PWM_PIN_R, std::min(4095,abs(PWM)));
+      // ledcWrite(PWM_PIN_R, std::min(4095,abs(PWM)));
 
       break;
     }
@@ -387,22 +404,16 @@ void setup() {
   // begin
   Serial.begin(115200);
   Serial.println("START");
-  //EN A and EN B
-  pinMode(FORWARD_PIN,OUTPUT);
-  pinMode(BACKWARD_PIN,OUTPUT);
-
-  digitalWrite(FORWARD_PIN, 0);
-  digitalWrite(BACKWARD_PIN, 0);
-
   //driving PWM setup
   // ledcAttach(PWM_PIN_L, motor_pwm_freq, motor_pwm_res);
-  ledcAttachChannel(PWM_PIN_R, motor_pwm_freq, motor_pwm_res, 0);
+  ledcAttachChannel(PWM_BW_PIN, motor_pwm_freq, motor_pwm_res, 0);
+  ledcAttachChannel(PWM_FW_PIN, motor_pwm_freq, motor_pwm_res, 2);
   // ledcAttach(PWM_PIN_R, motor_pwm_freq, motor_pwm_res);
 
   //lidar PWM speed control setup
   // pinMode(LIDAR_PWM_PIN, OUTPUT);
   // digitalWrite(LIDAR_PWM_PIN, LOW);
-  ledcAttachChannel(LIDAR_PWM_PIN, lidar_pwm_freq, lidar_pwm_res, 2);
+  ledcAttachChannel(LIDAR_PWM_PIN, lidar_pwm_freq, lidar_pwm_res, 4);
   // ledcAttach(LIDAR_PWM_PIN, lidar_pwm_freq, lidar_pwm_res);
   Serial.println("succesfull?");
   Serial.println(ledcWrite(LIDAR_PWM_PIN, 2048)); //enable PWM control
@@ -426,7 +437,7 @@ void setup() {
   timerAlarm(timer,100,true,0);
 
   //servo pwm
-  ledcAttachChannel(S_PWM_PIN, spwm_freq, spwm_res,5);
+  ledcAttachChannel(S_PWM_PIN, spwm_freq, spwm_res,6);
   ledcWrite(S_PWM_PIN, SERVO_CENT);
 
   //encoder
@@ -495,7 +506,9 @@ void disconnect(){
   sMode=S_NONE;
   conn_state=STATUS_SYNCING;
   // ledcWrite(PWM_PIN_L,0);
-  ledcWrite(PWM_PIN_R,0);
+  // ledcWrite(PWM_PIN_R,0);
+  ledcWrite(PWM_BW_PIN, 0);
+  ledcWrite(PWM_FW_PIN, 0);
   setLedStatus(STATUS_SYNCING);
 }
 //sends an int to the raspberry pi via serial
@@ -525,18 +538,39 @@ void steer(int percentage){
 }
 //Send packet containing all data collected by the ESP to the Raspberry Pi via Serial protocol
 void sendPacket() {
-  
+  int checkSum=1;
   PiSerial.write('E'); //1
   PiSerial.write('S'); //2
   PiSerial.write('P'); //3
-  PiSerial.write(conn_state); //4
-  sendInt(absYaw); //8
-  sendInt(posL); //12
-  sendInt(posR); //16
-  PiSerial.write(vMode); //17
-  PiSerial.write(sMode); //18
-  sendInt(speed); //22
-  sendInt(log_var); //26 bytes per packet
+  int conn_state_t=conn_state;
+  PiSerial.write(conn_state_t); //4
+  checkSum+=(conn_state_t%256);
+  int absYaw_t=absYaw;
+  sendInt(absYaw_t); //8
+  checkSum+=(absYaw_t%256);
+  int posL_t=posL;
+  sendInt(posL_t); //12
+  checkSum+=(posL_t%256);
+  int posR_t=posR;
+  sendInt(posR_t); //16
+  checkSum+=(posR_t%256);
+  int vMode_t=vMode;
+  PiSerial.write(vMode_t); //17
+  checkSum+=(vMode_t%256);
+  int sMode_t=sMode;
+  PiSerial.write(sMode_t); //18
+  checkSum+=(sMode_t%256);
+  int speed_t=speed;
+  sendInt(speed_t); //22
+  checkSum+=(speed_t%256);
+  int log_var_t=log_var;
+  sendInt(log_var_t); //26
+  checkSum+=(log_var_t%256);
+
+  checkSum%=256;
+  sendInt(checkSum); //30 bytes per packet
+
+
   log_var++;
 }
 //main loop
@@ -546,14 +580,21 @@ void loop() {
   // log_var=t-heartBeatT0;
   //checks if there is new gyro data available, if yes, updates internal absyaw variable. Also prevents the gyro from looping around
   if (rvc.read(&heading)) {
-    newYaw=heading.yaw*10; //data is in .1 degrees
+    newYaw=heading.yaw*10; //data is in .1 degrees, 1.4° error/360° (over)
     
     if(newYaw-lastYaw>1800) {yawOffset-=3600;}
     if(newYaw-lastYaw<-1800){yawOffset+=3600;}
-    arcSpeed=(newYaw+yawOffset)-absYaw;
-    absYaw=newYaw+yawOffset;
+    
+    absYaw=(int)((newYaw+yawOffset)/(1+(float)gyroError/3600));
+    if(abs(absYaw-lastAbsYaw)>2) {
+      // Serial.print("gyro error ");
+      // Serial.println(gyroError);
+      // Serial.print("absyaw ");
+      // Serial.println(absYaw);
+    }
+    arcSpeed=absYaw-lastAbsYaw;
     lastYaw=newYaw;
-
+    lastAbsYaw=absYaw;
     sendPacket();
   } else{
     // Serial.println("no data");
@@ -587,7 +628,16 @@ void loop() {
           kD=readInt();
           break;
         case CMD_SET_SPCTRL_I:
-          kI=readInt()/1000;
+          kI=readInt();
+          break;
+        case CMD_SET_ARCCANCEL:
+          arcCancel=(readInt()==1);
+          break;
+        case CMD_SET_GYROERROR:
+          Serial.print("SET GYROEEROR ");
+          
+          gyroError=readInt();
+          Serial.println(gyroError);
           break;
         case CMD_SET_HANDBRAKE_P:
           handbrakeP=readInt();
@@ -606,7 +656,6 @@ void loop() {
           conn_state=STATUS_CONNECTED;
           setLedStatus(STATUS_CONNECTED);
           heartBeatT0=millis();
-          // Serial.println("speed:");
           // Serial.println(speed);
           break;
         case CMD_SET_VMODE:
@@ -633,6 +682,7 @@ void loop() {
           Serial.println("smode");
           if(data==S_ARC) {
             isArcing=true;
+            arcCancel=false;
             Serial.println("sarc");
             Serial.println(absYaw);
           }
