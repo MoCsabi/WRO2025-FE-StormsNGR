@@ -1,5 +1,8 @@
 # Introduction
-We are the StormsNGR team from Hungary, and we are competing in the 2025 WRO Future Engineers category. This is our second year competing after a very successful first year, for which you can find our documentation [here](https://github.com/MoCsabi/WRO2024-FE-StormsNGR). We will be keeping that repository as it is, and will be updating this repository for the 2025 season.
+We are the StormsNGR team from Hungary, and we competed in the 2025 WRO Future Engineers category. This was our second year competing after a very successful first year, for which you can find our documentation [here](https://github.com/MoCsabi/WRO2024-FE-StormsNGR). We will be keeping that repository as it is, and will be updating this repository for the 2025 season.
+
+# Results
+We once again managed to earn a spot on the podium with 3rd place, a result we are very proud of 😊. We will be keeping this repository as is to help those who are interested study our complete 2025 season solution. For the 2026 season you can follow our progress in the [WRO2026-FE-StormsNGR](https://github.com/MoCsabi/WRO2026-FE-StormsNGR) repository.
 
 ## The team
 >Team members
